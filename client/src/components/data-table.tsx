@@ -99,6 +99,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const schema = z.object({
   id: z.number(),
   header: z.string(),
