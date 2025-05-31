@@ -3,3 +3,9 @@ export enum ScreenSize {
     TABLET = "768px",
     DESKTOP = "1440px",
 }
+
+export enum AccountType {
+    STUDENT = "student",
+    ADMIN = "admin",
+    FACULTY = "faculty",
+}

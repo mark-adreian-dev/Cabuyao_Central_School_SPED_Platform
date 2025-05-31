@@ -3,23 +3,34 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { AccountType } from "@/types/utils";
 
 interface FormData {
-  userId: string;
+  studentId?: string;
+  email?: string;
   password: string;
 }
 
 enum FormFields {
-  USER_ID = "userId",
+  STUDENT_ID = "studentId",
   PASSWORD = "password",
+  EMAIL = "email",
+}
+
+interface LoginFormProps {
+  className?: string;
+  accountType: string;
+  props?: React.ComponentProps<"form">;
 }
 
 export function LoginForm({
   className,
+  accountType,
   ...props
-}: React.ComponentProps<"form">) {
+}: LoginFormProps) {
   const [formData, setFormData] = useState<FormData>({
-    userId: "",
+    studentId: "",
+    email: "",
     password: "",
   });
 
@@ -53,13 +64,25 @@ export function LoginForm({
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email">
+            {accountType === AccountType.STUDENT ? "Student ID" : "Email"}
+          </Label>
           <Input
-            id="userId"
-            type="email"
-            placeholder="Enter your email"
+            id={
+              accountType === AccountType.STUDENT
+                ? FormFields.STUDENT_ID
+                : "email"
+            }
+            type={accountType === AccountType.STUDENT ? "text" : "email"}
+            placeholder={`Enter your ${
+              accountType === AccountType.STUDENT ? "student ID" : "email"
+            }`}
             required
-            name={FormFields.USER_ID}
+            name={
+              accountType === AccountType.STUDENT
+                ? FormFields.STUDENT_ID
+                : FormFields.EMAIL
+            }
             onChange={handleChange}
           />
         </div>
