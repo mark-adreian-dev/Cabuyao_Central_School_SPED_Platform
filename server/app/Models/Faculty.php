@@ -9,4 +9,16 @@ class Faculty extends Model
 {
     /** @use HasFactory<\Database\Factories\FacultyFactory> */
     use HasFactory;
+    protected $fillable = [
+        'user_id',
+        'position'
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'position' => 'integer',
+            'user_id' => 'integer',
+        ];
+    }
 }

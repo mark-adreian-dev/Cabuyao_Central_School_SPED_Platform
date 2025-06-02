@@ -9,15 +9,12 @@ class Student extends Model
 {
     /** @use HasFactory<\Database\Factories\StudentFactory> */
     use HasFactory;
-    protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'int';
 
     protected $fillable = [
         'id',
         'user_id',
         'grade_level',
-        'mother_tounge',
+        'mother_tongue',
         'LRN',
         'current_school',
     ];

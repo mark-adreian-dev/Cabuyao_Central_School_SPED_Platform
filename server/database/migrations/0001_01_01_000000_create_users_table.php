@@ -16,14 +16,14 @@ return new class extends Migration {
             $table->string('last_name');
             $table->string('middle_name')->nullable();
             $table->string('ext')->nullable();
-            $table->enum('role', ['PRINCIPAL', 'STUDENT', 'FACULTY']);
+            $table->enum('role', ['PRINCIPAL', 'STUDENT', 'FACULTY', 'GUARDIAN']);
             $table->enum('sex', ['MALE', 'FEMALE']);
             $table->string('profile_picture')->nullable();
             $table->date('date_of_birth');
             $table->string('mobile_number');
             $table->string('address');
             $table->integer('age');
-            $table->string('email')->unique();
+            $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
