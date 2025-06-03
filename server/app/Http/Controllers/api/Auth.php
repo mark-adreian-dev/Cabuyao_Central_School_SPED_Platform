@@ -114,7 +114,7 @@ class Auth extends Controller
                 default:
                     return response()->json(['error' => 'Invalid role.'], 400);
             }
-            return response()->json(['message' => 'User registered successfully'], 201);
+            return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
         } catch (\Throwable $th) {
             return response()->json(["message" => "Error: {$th->getMessage()} "], 400);
         }
@@ -189,17 +189,33 @@ class Auth extends Controller
             'role' => 'required|in:STUDENT,FACULTY,PRINCIPAL,GUARDIAN',
         ]);
 
-        if (!$validated["password"]) {
-            // return response()->json();
+        if ($validated["role"] === "STUDENT") {
+
+            if (!$validated["student_id"]) {
+                return response()->json(["message" => "Student ID is required"], 400);
+            }
+
+            $student = Student::where("id", $validated["student_id"])->first();
+            $user = User::find($student->user_id);
+
+            if (!$student || !$user || !Hash::check($validated["password"], $user->password)) {
+                return response()->json(["message" => "Credentials not found"], 404);
+            }
+            
+            $request->session()->regenerate();
+            return response()->json(['message' => 'Logged in', 'user' => $user], 200);
         }
 
+        if (!$validated["email"]) {
+            return response()->json(["message" => "Email is required"], 400);
+        }
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(["message" => "Credentials not found"], 404);
         }
-        $token = $user->createToken($user->email);
-        return response()->json(["message" => "Welcome {$user->name}", "user" => $user, "token" => $token->plainTextToken], 200);
+        $request->session()->regenerate();
+        return response()->json(['message' => 'Logged in', 'user' => $user], 200);
     }
 
     public function logout(Request $request)
