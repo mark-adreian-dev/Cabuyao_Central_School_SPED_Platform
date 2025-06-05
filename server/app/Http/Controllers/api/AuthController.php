@@ -17,8 +17,9 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
-class Auth extends Controller
+class AuthController extends Controller
 {
     public function register(Request $request)
     {
@@ -201,8 +202,7 @@ class Auth extends Controller
             if (!$student || !$user || !Hash::check($validated["password"], $user->password)) {
                 return response()->json(["message" => "Credentials not found"], 404);
             }
-            
-            $request->session()->regenerate();
+            Auth::login($user);
             return response()->json(['message' => 'Logged in', 'user' => $user], 200);
         }
 
@@ -214,7 +214,7 @@ class Auth extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(["message" => "Credentials not found"], 404);
         }
-        $request->session()->regenerate();
+        Auth::login($user);
         return response()->json(['message' => 'Logged in', 'user' => $user], 200);
     }
 

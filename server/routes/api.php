@@ -1,6 +1,7 @@
 <?php
 
-use App\Http\Controllers\api\Auth;
+// use App\Http\Controllers\api\Auth;
+use App\Http\Controllers\api\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
@@ -15,8 +16,8 @@ Route::group(["prefix" => "user"], function () {
     Route::get("/", function(){
         return response()->json(["message" => "Hello user"]);
     })->middleware('auth:sanctum');
-    Route::post("/", [Auth::class, 'register']);
-    Route::post("/send-email-verification/{user}", [Auth::class, 'sendVerification']);
-    Route::post("/verify-email/{user}", [Auth::class, 'verifyCode']);
-    Route::post("/login", [Auth::class, 'login']);
+    Route::post("/", [AuthController::class, 'register']);
+    Route::post("/send-email-verification/{user}", [AuthController::class, 'sendVerification']);
+    Route::post("/verify-email/{user}", [AuthController::class, 'verifyCode']);
+    Route::post("/login", [AuthController::class, 'login']);
 });
