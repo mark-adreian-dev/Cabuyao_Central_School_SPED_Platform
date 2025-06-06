@@ -211,16 +211,25 @@ class AuthController extends Controller
         }
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (Auth::attempt([
+            "email" => $validated["email"],
+            "password" => $validated["password"]
+        ])) {
+            return response()->json([
+                'message' => 'Successfully logged in',
+                'user' => Auth::user(),
+            ]);
+        } else {
             return response()->json(["message" => "Credentials not found"], 404);
         }
-        Auth::login($user);
         return response()->json(['message' => 'Logged in', 'user' => $user], 200);
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        return response()->json(["message" => "Logged out"], 200);
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        $request->session()->forget('user_id');
+        return response()->json(["message" => "Logged out"], 200)->withCookie(cookie()->forget("laravel_session"));
     }
 }
