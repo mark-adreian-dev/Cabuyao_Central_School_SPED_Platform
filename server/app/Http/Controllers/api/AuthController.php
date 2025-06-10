@@ -40,7 +40,7 @@ class AuthController extends Controller
                 'user.age' => 'required|integer|min:1',
 
                 'faculty.position' => 'required_if:user.role,faculty|integer',
-                'principal.year_started' => 'required_if:user.role,principal|date',
+                'principal.year_started' => 'required_if:user.role,principal|integer',
                 'guardian.student_id' => 'required_if:user.role,guardian|exists:students,id',
                 'guardian.mother_tongue' => 'required_if:user.role,guardian|string',
                 'student.id' => 'nullable',
@@ -197,7 +197,7 @@ class AuthController extends Controller
             }
 
             $student = Student::where("id", $validated["student_id"])->first();
-            $user = User::find($student->user_id);
+            $user = User::where("id", $student->user_id)->first();
 
             if (!$student || !$user || !Hash::check($validated["password"], $user->password)) {
                 return response()->json(["message" => "Credentials not found"], 404);
@@ -211,18 +211,20 @@ class AuthController extends Controller
         }
         $user = User::where('email', $request->email)->first();
 
-        if (Auth::attempt([
+        if($validated["role"] === $user->role){
+            if (Auth::attempt([
             "email" => $validated["email"],
             "password" => $validated["password"]
-        ])) {
-            return response()->json([
-                'message' => 'Successfully logged in',
-                'user' => Auth::user(),
-            ]);
-        } else {
-            return response()->json(["message" => "Credentials not found"], 404);
+            ])) {
+                return response()->json([
+                    'message' => 'Successfully logged in',
+                    'user' => Auth::user(),
+                ]);
+            } 
         }
-        return response()->json(['message' => 'Logged in', 'user' => $user], 200);
+        else {
+             return response()->json(["message" => "Credentials not found"], 404);
+        }
     }
 
     public function logout(Request $request)
@@ -230,6 +232,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         $request->session()->forget('user_id');
-        return response()->json(["message" => "Logged out"], 200)->withCookie(cookie()->forget("laravel_session"));
+        return response()->json(["message" => "Logged out"], 200)->withCookie(cookie()->forget("cabuyao_central_school_sped_platform_session"));
     }
 }
