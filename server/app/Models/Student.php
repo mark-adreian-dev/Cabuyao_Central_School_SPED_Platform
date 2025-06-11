@@ -25,4 +25,19 @@ class Student extends Model
             'grade_level' => 'integer',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function sections()
+    {
+        return $this->belongsToMany(Section::class, 'student_section', 'student_id', 'section_id');
+    }
+
+    public function activeSection()
+    {
+        return $this->sections()->wherePivot('is_active', true)->first();
+    }
 }

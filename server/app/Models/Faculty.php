@@ -21,4 +21,14 @@ class Faculty extends Model
             'user_id' => 'integer',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function sections()
+    {
+        return $this->hasMany(Section::class);
+    }
 }

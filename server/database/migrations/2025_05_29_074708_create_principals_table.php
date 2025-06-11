@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('principals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->onDelete("cascade");
             $table->integer("year_started");
             $table->integer("year_ended")->nullable();
             $table->timestamps();

@@ -13,7 +13,7 @@ return new class extends Migration {
     {
         Schema::create('students', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->onDelete("cascade");
             $table->integer('grade_level');
             $table->string('mother_tongue');
             $table->string('LRN');
