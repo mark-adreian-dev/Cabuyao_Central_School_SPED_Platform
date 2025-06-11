@@ -18,11 +18,9 @@ class SectionController extends Controller
         return response()->json(["sections" => $sections], 200);
     }
 
-    public function show(int $id)
+    public function show(Section $section)
     {
-        $section = Section::with(['students.user', 'faculty.user'])->findOrFail($id);
-
-        return response()->json(["section" => $section], 200);
+        return response()->json(["section" => $section->load(["students.user, faculty.user"])], 200);
     }
 
     public function store(Request $request)

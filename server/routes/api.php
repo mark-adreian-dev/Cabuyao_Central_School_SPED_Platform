@@ -28,7 +28,7 @@ Route::group(["prefix" => "user"], function () {
 Route::group(["prefix" => "sections", 'middleware' => ['auth:sanctum']], function () {
     Route::post('/', [SectionController::class, 'store']);
     Route::get('/', [SectionController::class, 'index']);
-    Route::get('/{id}', [SectionController::class, 'show']);
+    Route::get('/{section}', [SectionController::class, 'show']);
     Route::put('/{section}', [SectionController::class, 'update']);
     Route::delete('/{section}', [SectionController::class, 'destroy']);
     Route::get('/student/{student}', [SectionController::class, 'showStudentSections']);
