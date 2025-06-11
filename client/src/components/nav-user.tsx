@@ -15,6 +15,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useContext } from "react";
+import { AuthContext } from "@/context/Auth/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { AccountType } from "@/types/utils";
 
 export function NavUser({
   user,
@@ -26,6 +30,24 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { logout, userData } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const userRole: AccountType | null | undefined = userData?.role;
+      const response = await logout();
+      console.log(response);
+      if (response == 200) {
+        if (userRole === AccountType.PRINCIPAL) navigate("/login/admin");
+        else if (userRole === AccountType.FACULTY) navigate("/login/faculty");
+        else if (userRole === AccountType.STUDENT) navigate("/login");
+        else navigate("/login");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <SidebarMenu>
@@ -71,7 +93,7 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <IconLogout />
               Log out
             </DropdownMenuItem>

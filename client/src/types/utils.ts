@@ -5,7 +5,15 @@ export enum ScreenSize {
 }
 
 export enum AccountType {
-    STUDENT = "student",
-    ADMIN = "admin",
-    FACULTY = "faculty",
+    STUDENT = "STUDENT",
+    PRINCIPAL = "PRINCIPAL",
+    FACULTY = "FACULTY",
+    PARENT = "PARENT"
+}
+
+export interface LoginFormInterface {
+    email: string,
+    studentId: string,
+    password: string,
+    role: AccountType
 }

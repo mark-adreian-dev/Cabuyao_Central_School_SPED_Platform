@@ -2,14 +2,10 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { AccountType } from "@/types/utils";
-
-interface FormData {
-  studentId?: string;
-  email?: string;
-  password: string;
-}
+import { useContext, useState } from "react";
+import { AccountType, type LoginFormInterface } from "@/types/utils";
+import { AuthContext } from "@/context/Auth/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 enum FormFields {
   STUDENT_ID = "studentId",
@@ -19,7 +15,7 @@ enum FormFields {
 
 interface LoginFormProps {
   className?: string;
-  accountType: string;
+  accountType: AccountType;
   props?: React.ComponentProps<"form">;
 }
 
@@ -28,17 +24,22 @@ export function LoginForm({
   accountType,
   ...props
 }: LoginFormProps) {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<LoginFormInterface>({
     studentId: "",
     email: "",
     password: "",
+    role: accountType,
   });
+
+  const { login, isError } = useContext(AuthContext);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = event.target;
-    setFormData((prevState: FormData) => {
+    setFormData((prevState: LoginFormInterface) => {
       return {
         ...prevState,
         [name]: value,
@@ -46,11 +47,30 @@ export function LoginForm({
     });
   };
 
-  const handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void = (
+  const handleSubmit: (
     event: React.FormEvent<HTMLFormElement>
-  ) => {
+  ) => void = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(formData);
+    setIsLoggingIn(true);
+    const response = await login(formData);
+
+    setIsLoggingIn(false);
+    if (response == 200) {
+      setFormData({
+        studentId: "",
+        email: "",
+        password: "",
+        role: accountType,
+      });
+
+      if (accountType == AccountType.PRINCIPAL) {
+        navigate("/admin/dashboard/accounts");
+      } else if (accountType == AccountType.FACULTY) {
+        navigate("/faculty/dashboard/accounts");
+      } else {
+        document.getElementById("userCredentials")?.focus();
+      }
+    }
   };
 
   return (
@@ -64,15 +84,11 @@ export function LoginForm({
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="email">
+          <Label htmlFor="userCredentials">
             {accountType === AccountType.STUDENT ? "Student ID" : "Email"}
           </Label>
           <Input
-            id={
-              accountType === AccountType.STUDENT
-                ? FormFields.STUDENT_ID
-                : "email"
-            }
+            id="userCredentials"
             type={accountType === AccountType.STUDENT ? "text" : "email"}
             placeholder={`Enter your ${
               accountType === AccountType.STUDENT ? "student ID" : "email"
@@ -84,6 +100,7 @@ export function LoginForm({
                 : FormFields.EMAIL
             }
             onChange={handleChange}
+            autoComplete="true"
           />
         </div>
         <div className="grid gap-3">
@@ -97,9 +114,14 @@ export function LoginForm({
             required
             name={FormFields.PASSWORD}
             onChange={handleChange}
+            autoComplete="true"
           />
         </div>
-        <Button type="submit" className="w-full">
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isLoggingIn || isError}
+        >
           Login
         </Button>
       </div>
