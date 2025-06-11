@@ -183,47 +183,55 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $validated = $request->validate([
-            'email' => 'sometimes|email',
-            'student_id' => 'sometimes',
-            'password' => 'required',
-            'role' => 'required|in:STUDENT,FACULTY,PRINCIPAL,GUARDIAN',
-        ]);
+        try {
+            $validated = $request->validate([
+                'email' => 'sometimes|email',
+                'student_id' => 'sometimes',
+                'password' => 'required',
+                'role' => 'required|in:STUDENT,FACULTY,PRINCIPAL,GUARDIAN',
+            ]);
 
-        if ($validated["role"] === "STUDENT") {
+            if ($validated["role"] === "STUDENT") {
 
-            if (!$validated["student_id"]) {
-                return response()->json(["message" => "Student ID is required"], 400);
+                if (!$validated["student_id"]) {
+                    return response()->json(["message" => "Student ID is required"], 400);
+                }
+
+                $student = Student::where("id", $validated["student_id"])->first();
+                $user = User::where("id", $student->user_id)->first();
+
+                if (!$student || !$user || !Hash::check($validated["password"], $user->password)) {
+                    return response()->json(["message" => "Credentials not found"], 404);
+                }
+                Auth::login($user);
+                return response()->json(['message' => 'Logged in', 'user' => $user], 200);
             }
 
-            $student = Student::where("id", $validated["student_id"])->first();
-            $user = User::where("id", $student->user_id)->first();
+            if (!$validated["email"]) {
+                return response()->json(["message" => "Email is required"], 400);
+            }
+            $user = User::where('email', $request->email)->first();
+            
 
-            if (!$student || !$user || !Hash::check($validated["password"], $user->password)) {
+            if (!$user) {
                 return response()->json(["message" => "Credentials not found"], 404);
             }
-            Auth::login($user);
-            return response()->json(['message' => 'Logged in', 'user' => $user], 200);
-        }
 
-        if (!$validated["email"]) {
-            return response()->json(["message" => "Email is required"], 400);
-        }
-        $user = User::where('email', $request->email)->first();
-
-        if($validated["role"] === $user->role){
-            if (Auth::attempt([
-            "email" => $validated["email"],
-            "password" => $validated["password"]
-            ])) {
-                return response()->json([
-                    'message' => 'Successfully logged in',
-                    'user' => Auth::user(),
-                ]);
-            } 
-        }
-        else {
-             return response()->json(["message" => "Credentials not found"], 404);
+            if ($validated["role"] === $user->role) {
+                if (Auth::attempt([
+                    "email" => $validated["email"],
+                    "password" => $validated["password"]
+                ])) {
+                    return response()->json([
+                        'message' => 'Successfully logged in',
+                        'user' => Auth::user(),
+                    ]);
+                }
+            } else {
+                return response()->json(["message" => "Credentials not found"], 404);
+            }
+        } catch (\Throwable $th) {
+            return response()->json(["message" => $th->getMessage()], 500);
         }
     }
 

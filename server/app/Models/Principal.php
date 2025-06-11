@@ -22,4 +22,9 @@ class Principal extends Model
             'year_ended' => 'integer',
         ];
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
