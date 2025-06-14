@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useContext, useState } from "react";
 import { AccountType, type LoginFormInterface } from "@/types/utils";
 import { AuthContext } from "@/context/Auth/AuthContext";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 enum FormFields {
   STUDENT_ID = "studentId",
@@ -33,7 +33,6 @@ export function LoginForm({
 
   const { login, isError } = useContext(AuthContext);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const navigate = useNavigate();
 
   const handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -52,23 +51,18 @@ export function LoginForm({
   ) => void = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoggingIn(true);
-    const response = await login(formData);
-
-    setIsLoggingIn(false);
-    if (response == 200) {
+    try {
+      await login(formData);
+      setIsLoggingIn(false);
       setFormData({
         studentId: "",
         email: "",
         password: "",
         role: accountType,
       });
-
-      if (accountType == AccountType.PRINCIPAL) {
-        navigate("/admin/dashboard/accounts");
-      } else if (accountType == AccountType.FACULTY) {
-        navigate("/faculty/dashboard/accounts");
-      } else {
-        document.getElementById("userCredentials")?.focus();
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        console.log(err.message);
       }
     }
   };
@@ -84,9 +78,9 @@ export function LoginForm({
       </div>
       <div className="grid gap-6">
         <div className="grid gap-3">
-          <Label htmlFor="userCredentials">
+          <label htmlFor="userCredentials">
             {accountType === AccountType.STUDENT ? "Student ID" : "Email"}
-          </Label>
+          </label>
           <Input
             id="userCredentials"
             type={accountType === AccountType.STUDENT ? "text" : "email"}
@@ -101,6 +95,12 @@ export function LoginForm({
             }
             onChange={handleChange}
             autoComplete="true"
+            className={`${isError && "border-[1px] border-red-500"}`}
+            value={
+              accountType == AccountType.STUDENT
+                ? formData.studentId
+                : formData.email
+            }
           />
         </div>
         <div className="grid gap-3">
@@ -115,6 +115,8 @@ export function LoginForm({
             name={FormFields.PASSWORD}
             onChange={handleChange}
             autoComplete="true"
+            className={`${isError && "border-[1px] border-red-500"}`}
+            value={formData.password}
           />
         </div>
         <Button

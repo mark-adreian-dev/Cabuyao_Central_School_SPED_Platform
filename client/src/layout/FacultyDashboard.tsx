@@ -34,16 +34,6 @@ const FacultyDashboard: () => JSX.Element = () => {
         icon: IconUsers,
       },
       {
-        title: "FACULTY",
-        url: "#",
-        icon: IconUsers,
-      },
-      {
-        title: "FACULTY",
-        url: "#",
-        icon: IconUsers,
-      },
-      {
         title: "IEP",
         url: "/login",
         icon: IconListDetails,
@@ -132,6 +122,7 @@ const FacultyDashboard: () => JSX.Element = () => {
       },
     ],
   };
+
   return (
     <SidebarProvider
       style={

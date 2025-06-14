@@ -6,19 +6,20 @@ import { AccountType, ScreenSize } from "@/types/utils";
 import Logo from "@/assets/GlobalAssets/Logo.png";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AuthContext } from "@/context/Auth/AuthContext";
+
 interface props {
   accountType: AccountType;
 }
 
 const Login: ({ accountType }: props) => JSX.Element = ({ accountType }) => {
-  const { isError, errorMessage, successMessage } = useContext(AuthContext);
+  const { errorMessage, isError } = useContext(AuthContext);
   return (
     <main
       className={`grid md:grid-cols-1 md:grid-row-2 xl:flex ${
         accountType === AccountType.STUDENT ? "flex-row" : "flex-row-reverse"
       }`}
     >
-      <div className="relative hidden bg-muted xl:min-h-[56rem] md:block md:h-fit xl:h-screen xl:w-full ">
+      <div className="relative hidden xl:min-h-[56rem] md:block md:h-fit xl:h-screen xl:w-full ">
         <picture>
           <source
             srcSet={DesktopImage}
@@ -35,21 +36,13 @@ const Login: ({ accountType }: props) => JSX.Element = ({ accountType }) => {
           />
         </picture>
       </div>
-      <div className="flex flex-col w-full xl:items-center xl:justify-center xl:w-lg xl:pt-32 relative">
-        {isError ? (
+      <div className="flex flex-col  w-full xl:items-center xl:justify-center xl:w-lg xl:pt-32 relative">
+        {isError && (
           <AlertDialog
             title={errorMessage}
             alertType={"destructive"}
             className="w-full px-16 absolute top-6"
           />
-        ) : successMessage ? (
-          <AlertDialog
-            title={successMessage}
-            alertType={"default"}
-            className="w-full px-16 absolute top-6"
-          />
-        ) : (
-          <></>
         )}
         <div className="flex justify-center items-center pt-12 flex-col mb-16">
           <div className="w-xs md:w-[32.75rem] xl:w-full">
@@ -72,7 +65,7 @@ const Login: ({ accountType }: props) => JSX.Element = ({ accountType }) => {
           <div className="p-6 border-border border-2 rounded-2xl w-xs md:w-[32.75rem] xl:w-sm ">
             <LoginForm accountType={accountType} />
           </div>
-        </div>{" "}
+        </div>
       </div>
     </main>
   );

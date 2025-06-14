@@ -1,6 +1,3 @@
-import type { User } from "./models";
-
-
 export enum ResponseStatus {
     NOT_FOUND = 404,
     SUCCESS = 200,
@@ -8,5 +5,5 @@ export enum ResponseStatus {
 }
 export interface LoginSuccessResponse {
     message: string,
-    user: User
+    token: string
 }

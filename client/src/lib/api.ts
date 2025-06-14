@@ -4,20 +4,19 @@ import axios from 'axios'
 const api = axios.create({
     baseURL: "http://127.0.0.1:8000",
     timeout: 60000,
-    withCredentials: true,
     headers: {
         "Accept": "application/json",
+        "Content-Type": "application/json"
     },
-    xsrfCookieName: "XSRF-TOKEN",
-    xsrfHeaderName: "X-XSRF-TOKEN",
+
 })
 
+export const setAuthToken = (token: string) => {
+    api.defaults.headers.common.Authorization = `Bearer ${token}`
+}
 
-export const setCSRFHeader = () => {
-    const match = document.cookie.match(new RegExp("(^| )XSRF-TOKEN=([^;]+)"));
-    api.defaults.headers.common["X-XSRF-TOKEN"] = match
-        ? decodeURIComponent(match[2])
-        : "";
-};
+export const resetAuthToken = () => {
+    api.defaults.headers.common.Authorization = ''
+}
 
 export default api
