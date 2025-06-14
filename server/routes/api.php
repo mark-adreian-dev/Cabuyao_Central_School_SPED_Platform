@@ -1,28 +1,22 @@
 <?php
 
-// use App\Http\Controllers\api\Auth;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\SectionController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\EmailVerification;
-use Illuminate\Support\Facades\Auth;
-
-// Route::get('/sanctum/csrf-cookie', function () {
-//     return response()->json(['csrf_token' => csrf_token()]);
-// });
 
 
-Route::group(["prefix" => "user"], function () {
-    Route::get("/", function(){
-        return response()->json(["message" => "Hello user", "user" => Auth::user()]);
-    })->middleware('auth:sanctum');
-    Route::post("/", [AuthController::class, 'register']);
+Route::prefix("user")->group(function () {
+     // Unprotected Routes (Available to unauthenticated users)
+    Route::post("/register", [AuthController::class, 'register']); // Register user
     Route::post("/send-email-verification/{user}", [AuthController::class, 'sendVerification']);
     Route::post("/verify-email/{user}", [AuthController::class, 'verifyCode']);
-    Route::post("/login", [AuthController::class, 'login']);
-    Route::post("/logout", [AuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::post("/login", [AuthController::class, 'login']); // Login user to get token (no auth:sanctum middleware)
+    
+    // Protected Routes for User (Requires Auth)
+    Route::middleware(["auth:sanctum"])->group(function() {
+        Route::get("/", [AuthController::class, 'loadUser']);
+        Route::post("/logout", [AuthController::class, 'logout']); // Log out (invalidate token)
+    });
 });
 
 Route::group(["prefix" => "sections", 'middleware' => ['auth:sanctum']], function () {
