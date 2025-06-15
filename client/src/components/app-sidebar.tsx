@@ -15,12 +15,14 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import type { SidebarType } from "@/types/sidebar";
+import type { User } from "@/types/models";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   data: SidebarType; // or use a specific type instead of `any`
+  userData: User | null;
 }
 
-export function AppSidebar({ data, ...props }: AppSidebarProps) {
+export function AppSidebar({ data, userData, ...props }: AppSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -49,9 +51,7 @@ export function AppSidebar({ data, ...props }: AppSidebarProps) {
         {/* <NavDocuments items={data.documents} /> */}
         {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
+      <SidebarFooter>{userData && <NavUser user={userData} />}</SidebarFooter>
     </Sidebar>
   );
 }

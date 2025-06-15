@@ -4,7 +4,7 @@ import { authInitalValue, AuthContext } from "./AuthContext";
 import { AccountType, type LoginFormInterface } from "@/types/utils";
 import api, { resetAuthToken, setAuthToken } from "@/lib/api";
 import { ResponseStatus, type LoginSuccessResponse } from "@/types/response";
-import axios, { AxiosError, type AxiosResponse } from "axios";
+import axios from "axios";
 import type { User } from "@/types/models";
 import { useNavigate } from "react-router-dom";
 
@@ -15,19 +15,21 @@ interface ErrorResponse {
   message: string;
 }
 
+//milliseconds
+const AUTH_STATE_TIMEOUT = 2500
+
 const AuthState: React.FC<Props> = ({ children }) => {
   const [authState, authDispatch] = useReducer(AuthReducer, authInitalValue);
   const navigate = useNavigate();
+
   const resetAuthState = () => {
     setTimeout(() => {
       authDispatch({ type: "RESET_AUTH_STATUS" });
-    }, 1000);
+    }, AUTH_STATE_TIMEOUT);
   };
-
   const handleError = (error: unknown) => {
     if (axios.isAxiosError<ErrorResponse>(error)) {
-      const message =
-        error.response?.data?.message || error.message || "Unknown error";
+      const message = error.response?.data?.message || error.message || "Unknown error";
 
       authDispatch({
         type: "ERROR_LOGIN",
@@ -48,15 +50,34 @@ const AuthState: React.FC<Props> = ({ children }) => {
 
       resetAuthState();
     }
-  };
 
+    return
+  };
+  const redirectUserToLogin = (userRole: AccountType) => {
+    if (userRole === AccountType.PRINCIPAL) navigate("/login/admin");
+    else if (userRole === AccountType.FACULTY) navigate("/login/faculty");
+    else if (userRole === AccountType.STUDENT) navigate("/login");
+    else navigate("/login");
+  }
+  const authRedirect = (user: User) => {
+    if (user.email_verified_at === null) {
+      navigate("/verify/account");
+    } else {
+      if (user.role == AccountType.PRINCIPAL) {
+        navigate("/admin/dashboard/accounts");
+      } else if (user.role == AccountType.FACULTY) {
+        navigate("/faculty/dashboard/accounts");
+      }
+    }
+  }
   const login = async (credentials: LoginFormInterface) => {
     authDispatch({ type: "SET_IS_LOADING" });
     try {
+      console.log("Sending login request...")
       const response = await api.post("/api/user/login", credentials);
+      console.log(response)
       if (response.status == ResponseStatus.SUCCESS) {
         const data: LoginSuccessResponse = response.data;
-        console.log(data.message);
         setAuthToken(data.token);
         authDispatch({
           type: "LOGIN",
@@ -65,19 +86,21 @@ const AuthState: React.FC<Props> = ({ children }) => {
             successMessage: data.message,
           },
         });
-        resetAuthState();
+        await loadUser()
+        return ResponseStatus.SUCCESS
+      } else {
+        return ResponseStatus.INTERNAL_SERVER_ERROR;
       }
-      await loadUser();
-    } catch (error) {
+
+    } catch (error) {    
       handleError(error);
+      return ResponseStatus.UNAUTHORIZED
     }
   };
-
   const logout = async () => {
-    authDispatch({ type: "SET_IS_LOADING" });
     try {
       const response = await api.post("/api/user/logout");
-      if (response.status == ResponseStatus.SUCCESS) {
+      if (response.status == ResponseStatus.SUCCESS && authState.userData) {
         authDispatch({ type: "LOGOUT" });
 
         resetAuthToken();
@@ -88,77 +111,72 @@ const AuthState: React.FC<Props> = ({ children }) => {
         const bodyTag = document.getElementsByTagName("body")[0];
         bodyTag.style.pointerEvents = "auto";
 
-        const userRole: AccountType | null | undefined =
-          authState.userData?.role;
-        if (userRole === AccountType.PRINCIPAL) navigate("/login/admin");
-        else if (userRole === AccountType.FACULTY) navigate("/login/faculty");
-        else if (userRole === AccountType.STUDENT) navigate("/login");
-        else navigate("/login");
-      }
+        const userRole = authState.userData.role;
+        redirectUserToLogin(userRole); 
+
+      }   
     } catch (error) {
       handleError(error);
     }
   };
-
   const loadUser = async () => {
-    console.log("Loading user data...");
-    const response = await api.get("/api/user");
-    const user: User = response.data;
-    console.log(
-      "USER: ",
-      `${user.first_name.toUpperCase()} ${user.last_name.toUpperCase()}`
-    );
-    console.log("ROLE: ", `${user.role.toUpperCase()}`);
-    authDispatch({
-      type: "LOAD_USER",
-      payload: {
-        user: user,
-      },
-    });
-
-    if (user.email_verified_at === null) {
-      navigate("/verify/account");
-    } else {
-      if (user.role == AccountType.PRINCIPAL) {
-        navigate("/admin/dashboard/accounts");
-      } else if (user.role == AccountType.FACULTY) {
-        navigate("/faculty/dashboard/accounts");
-      }
+    try {
+      const response = await api.get("/api/user");
+      const user: User = response.data;
+      authDispatch({
+        type: "LOAD_USER",
+        payload: {
+          user: user,
+        },
+      });
+      authRedirect(user);
+      
+    } catch (err) {
+      handleError(err);
     }
   };
-
-  const sendEmailVerification = async (userId: number | undefined) => {
-    if (!userId) return;
+  const sendEmailVerification = async (userId: number) => {
     try {
+      authDispatch({ type: "SET_IS_LOADING" })
       const response = await api.post(
         `/api/user/send-email-verification/${userId}`
       );
+
       if (response.status === ResponseStatus.SUCCESS) {
-        authDispatch({ type: "SET_IS_OTP_SENT" });
+        authDispatch({
+          type: "REQUEST_SUCCESS",
+          payload: {
+            successMessage: response.data.message,
+          },
+        });
+        resetAuthState()
+        return ResponseStatus.SUCCESS
+      } else {
+          return ResponseStatus.INTERNAL_SERVER_ERROR;
       }
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        authDispatch({ type: "RESET_AUTH_STATUS" });
-      }
+    } catch (err) { 
+      handleError(err)
+      return ResponseStatus.BAD_REQUEST;
     }
   };
-
   const verifyAccount = async (
-    userData: User | undefined,
-    code: string | undefined
-  ): Promise<AxiosResponse | AxiosError> => {
-    if (!userData) throw new Error("Cannot identify target user");
-
+    userData: User,
+    code: string
+  ) => {
     try {
       const response = await api.post(`/api/user/verify-email/${userData.id}`, {
         code,
       });
-      return response;
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        return err; // let the caller catch it
+      if (response.status === ResponseStatus.SUCCESS) {
+        return ResponseStatus.SUCCESS
+      } else if (response.status === ResponseStatus.NOT_FOUND){
+        return ResponseStatus.NOT_FOUND
+      } else {
+        return ResponseStatus.INTERNAL_SERVER_ERROR
       }
-      throw new Error("Unknown error occurred");
+    } catch (err) {
+      handleError(err)
+      return ResponseStatus.BAD_REQUEST;
     }
   };
 
@@ -178,6 +196,7 @@ const AuthState: React.FC<Props> = ({ children }) => {
         sendEmailVerification,
         verifyAccount,
         authDispatch,
+        authRedirect,
       }}
     >
       {children}

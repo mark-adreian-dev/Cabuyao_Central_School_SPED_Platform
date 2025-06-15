@@ -18,11 +18,11 @@ import {
 } from "@/components/ui/input-otp";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/Auth/AuthContext";
-import axios from "axios";
 import { ResponseStatus } from "@/types/response";
 import { useNavigate } from "react-router-dom";
 import { AccountType } from "@/types/utils";
 import Logo from "@/assets/GlobalAssets/Logo.png";
+import { toast, Toaster } from "sonner";
 
 const FormSchema = z.object({
   pin: z.string().min(6, {
@@ -33,8 +33,17 @@ const FormSchema = z.object({
 const OTP_DURATION: number = 30;
 
 export function OTPVerificationPage() {
-  const { userData, sendEmailVerification, verifyAccount, authDispatch } =
-    useContext(AuthContext);
+  const {
+    userData,
+    sendEmailVerification,
+    verifyAccount,
+    successMessage,
+    errorMessage,
+    isError,
+    authDispatch,
+    loadUser
+    
+  } = useContext(AuthContext);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -45,62 +54,76 @@ export function OTPVerificationPage() {
   const [timer, setTimer] = useState(OTP_DURATION);
   const [isAllowedToSendOTP, setIsAllowedToSendOtp] = useState(true);
   const [isFirstOTP, setIsFirstOtp] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false)
 
+  //Handles the OTP Timer
   useEffect(() => {
+  
     if (timer === 0) {
+      //Allows user to send another verification and resets the timer
       setIsAllowedToSendOtp(true);
+      setIsDisabled(false)
       setTimer(OTP_DURATION);
     } else if (!isAllowedToSendOTP) {
-      const interval = setInterval(() => {
+      //Reduces timer by 1 after a second
+      const timeout = setTimeout(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
 
+      //Prevent stacking up of setTimeout functions
       return () => {
-        clearInterval(interval);
+        clearTimeout(timeout);
       };
     }
+    
   }, [timer, authDispatch, isAllowedToSendOTP]);
+
+  useEffect(() => {
+    if (isError) {
+      form.setError("pin", {
+        type: "manual",
+        message: errorMessage,
+      });
+    }
+
+  }, [errorMessage, isError, form])
 
   const sendEmailConfirmation = async () => {
     setIsAllowedToSendOtp(false);
-    setIsFirstOtp(true);
+    setIsDisabled(true)
+    form.clearErrors()
     if (userData) {
-      try {
-        await sendEmailVerification(userData.id);
-        console.log("OTP Confirmation sent");
-      } catch (err) {
-        if (axios.isAxiosError(err)) {
-          const errorMsg =
-            err.response?.data?.message || "Something went wrong";
+      toast.info(`Sending verification code to ${userData.email}`);
+      const responseStatus = await sendEmailVerification(userData.id);
+      if (responseStatus === ResponseStatus.SUCCESS) {
+        setIsDisabled(true)
+        setIsFirstOtp(true);
+        return toast.success("OTP Successfully Sent", {
+          description: successMessage,
+        });
+              
 
-          // Set the error on the "pin" field
-          form.setError("pin", {
-            type: "manual",
-            message: errorMsg,
-          });
-        }
+      } else {
+        // Set the error on the "pin" field
+        setIsAllowedToSendOtp(true);
+        setIsDisabled(false)
+        setTimer(OTP_DURATION);
+        form.setError("pin", {
+          type: "manual",
+          message: errorMessage,
+        });
+        return toast.error("Something went wrong", {
+          description: errorMessage,
+        });
       }
-    }
+    } 
   };
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (userData) {
-      const response = await verifyAccount(userData, data.pin);
-
-      if (response.status === ResponseStatus.SUCCESS) {
-        authDispatch({ type: "RESET_AUTH_STATUS" });
-        if (userData.role == AccountType.PRINCIPAL) {
-          navigate("/admin/dashboard/accounts");
-        } else if (userData.role == AccountType.FACULTY) {
-          navigate("/faculty/dashboard/accounts");
-        }
-      }
-
-      if (axios.isAxiosError(response)) {
-        const errorData = response.response?.data as { message?: string };
-        form.setError("pin", {
-          type: "manual",
-          message: errorData?.message || "Something went Wrong",
-        });
+      const responseStatus = await verifyAccount(userData, data.pin);
+      console.log(responseStatus)
+      if (responseStatus === ResponseStatus.SUCCESS) {
+        await loadUser()
       }
     }
   };
@@ -119,7 +142,10 @@ export function OTPVerificationPage() {
 
   return (
     <>
-      <header className="h-fit absolute left-0 top-0 w-full py-6 px-64">
+
+      <Toaster position="top-center" richColors />
+
+      <header className="h-fit absolute left-0 top-0 w-full py-6 px-8 lg:px-64">
         <div className=" flex justify-between items-center mb-6">
           <a href="#" className="flex justify-start items-center">
             <img
@@ -127,9 +153,11 @@ export function OTPVerificationPage() {
               alt="logo"
               className="object-contain w-14 h-14 mr-4"
             />
-            <span className="text-xl font-bold">Cabuyao Central School</span>
+            <span className="text-md lg:text-xl font-bold">
+              Cabuyao Central School
+            </span>
           </a>
-          <Button onClick={redirect}>Back To Login</Button>
+          <Button onClick={redirect}>Login</Button>
         </div>
       </header>
       <main className="w-full h-screen flex flex-col justify-center items-center">
@@ -186,7 +214,7 @@ export function OTPVerificationPage() {
                   <Button type="submit">Submit</Button>
                   <Button
                     type="button"
-                    disabled={!isAllowedToSendOTP}
+                    disabled={isDisabled}
                     onClick={sendEmailConfirmation}
                     className="text-accent-foreground bg-transparent border-2 border-accent-foreground hover:text-accent hover:bg-accent-foreground"
                   >

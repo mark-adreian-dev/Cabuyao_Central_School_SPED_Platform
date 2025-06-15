@@ -1,4 +1,4 @@
-/vendor/
+vendor/
 node_modules/
 npm-debug.log
 yarn-error.log
@@ -19,11 +19,11 @@ storage/*.key
 .env
 Homestead.yaml
 Homestead.json
-/.vagrant
+.vagrant
 .phpunit.result.cache
 
-/public/build
-/storage/pail
+public/build
+storage/pail
 .env.backup
 .env.production
 .phpactor.json
@@ -85,3 +85,55 @@ Thumbs.db
 
 # Optional REPL history
 .node_repl_history
+
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+.phpunit.cache
+node_modules
+public/build
+public/hot
+public/storage
+storage/*.key
+storage/pail
+vendor
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+auth.json
+.fleet
+.idea
+.nova
+.vscode
+.zed
+
+

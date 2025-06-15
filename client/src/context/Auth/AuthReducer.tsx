@@ -5,9 +5,9 @@ export type AuthAction =
   | { type: "LOGIN"; payload: { token: string; successMessage: string } }
   | { type: "LOAD_USER"; payload: { user: User } }
   | { type: "ERROR_LOGIN"; payload: { errorMessage: string } }
+  | { type: "REQUEST_SUCCESS"; payload: { successMessage: string } }
   | { type: "RESET_AUTH_STATUS" }
   | { type: "SET_IS_LOADING" }
-  | { type: "SET_IS_OTP_SENT" }
   | { type: "LOGOUT" };
 
 const AuthReducer = (state: AuthContextInitialValue, action: AuthAction) => {
@@ -17,7 +17,6 @@ const AuthReducer = (state: AuthContextInitialValue, action: AuthAction) => {
         ...state,
         token: action.payload.token,
         isLoggedIn: true,
-        successMessage: action.payload.successMessage,
       };
     }
     case "LOAD_USER": {
@@ -32,17 +31,17 @@ const AuthReducer = (state: AuthContextInitialValue, action: AuthAction) => {
         isLoading: true,
       };
     }
-    case "SET_IS_OTP_SENT": {
-      return {
-        ...state,
-        isOTPSent: true,
-      };
-    }
     case "ERROR_LOGIN": {
       return {
         ...state,
         isError: true,
         errorMessage: action.payload.errorMessage,
+      };
+    }
+    case "REQUEST_SUCCESS": {
+      return {
+        ...state,
+        successMessage: action.payload.successMessage,
       };
     }
     case "RESET_AUTH_STATUS": {

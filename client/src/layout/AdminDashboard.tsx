@@ -1,4 +1,4 @@
-import { type JSX } from "react";
+import { useContext, type JSX } from "react";
 import { Outlet } from "react-router-dom";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -16,6 +16,7 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import { type SidebarType } from "@/types/sidebar";
+import { AuthContext } from "@/context/Auth/AuthContext";
 
 const data: SidebarType = {
   user: {
@@ -25,13 +26,13 @@ const data: SidebarType = {
   },
   navMain: [
     {
-      title: "PRINCIPAL",
+      title: "Accounts",
       url: "/admin/dashboard/accounts",
       icon: IconUsers,
     },
     {
       title: "Students",
-      url: "/login",
+      url: "#",
       icon: IconListDetails,
     },
   ],
@@ -120,6 +121,7 @@ const data: SidebarType = {
 };
 
 const AdminDashboard: () => JSX.Element = () => {
+  const { userData } = useContext(AuthContext);
   return (
     <SidebarProvider
       style={
@@ -129,7 +131,7 @@ const AdminDashboard: () => JSX.Element = () => {
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" data={data} />
+      <AppSidebar variant="inset" data={data} userData={userData} />
       <Outlet />
     </SidebarProvider>
   );

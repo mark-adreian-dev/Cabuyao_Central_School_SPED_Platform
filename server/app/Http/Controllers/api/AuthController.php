@@ -115,7 +115,7 @@ class AuthController extends Controller
             }
             
         } catch (\Throwable $th) {
-            return response()->json(["message" => "Error: {$th->getMessage()} ", "user" => $user], 400);
+            return response()->json(["message" => "Error: {$th->getMessage()} ", "user" => $user], 500);
         }
     }
     public function verifyCode(Request $request, User $user)
