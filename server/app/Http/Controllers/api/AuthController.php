@@ -27,67 +27,71 @@ class AuthController extends Controller
             $data = $validated;
             $userData = $data['user'];
 
-            $existingUser = User::where('email', $userData['email'])->first();
+            $existingUser = $this->getUserByRoleAndData($userData);
 
-            if ($existingUser && $existingUser->email_verified_at !== null) {
+            if ($existingUser) {
                 return response()->json(['message' => 'Email has already been used.'], 409);
+            } else {
+                
+                $user = User::create([
+                    'first_name' => $userData['first_name'],
+                    'last_name' => $userData['last_name'],
+                    'middle_name' => $userData['middle_name'] ?? null,
+                    'ext' => $userData['ext'] ?? null,
+                    'email' => $userData['role'] === "STUDENT" ? null : $userData["email"],
+                    'password' => Hash::make($userData['password']),
+                    'sex' => $userData['sex'],
+                    'profile_picture' => $userData['profile_picture'],
+                    'role' => $userData['role'],
+                    'date_of_birth' => $userData['date_of_birth'],
+                    'mobile_number' => $userData['mobile_number'],
+                    'address' => $userData['address'],
+                    'age' => $userData['age']
+                ]);
+
+                switch ($userData['role']) {
+                    case 'STUDENT':
+                        $studentCount = Student::count();
+                        $year = now()->format('y');
+                        $studentId = intval($year) * 1000 + $studentCount + 1;
+                        Student::create([
+                            'id' => $studentId,
+                            'user_id' => $user->id,
+                            'grade_level' => $data['student']['grade_level'],
+                            'mother_tongue' => $data['student']['mother_tongue'],
+                            'LRN' => $data['student']['LRN'],
+                            'current_school' => $data['student']['current_school'],
+                        ]);
+                        break;
+                    case 'FACULTY':
+                        Faculty::create([
+                            'user_id' => $user->id,
+                            'position' => $data['faculty']['position'],
+                        ]);
+                        break;
+                    case 'PRINCIPAL':
+                        Principal::create([
+                            'user_id' => $user->id,
+                            'year_started' => $data['principal']['year_started'],
+                        ]);
+                        break;
+                    case 'GUARDIAN':
+                        Guardian::create([
+                            'user_id' => $user->id,
+                            'student_id' => $data['guardian']['student_id'],
+                            'mother_tongue' => $data['guardian']['mother_tongue'],
+                        ]);
+                        break;
+                    default:
+                        return $this->respondError("Specified role is invalid", "INVALID_ROLE", 400);
+                }
+                return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
             }
 
-            if ($existingUser && $existingUser->email_verified_at === null) {
-                $this->removeExistingUser($existingUser);
-            }
 
-            $user = User::create([
-                'first_name' => $userData['first_name'],
-                'last_name' => $userData['last_name'],
-                'middle_name' => $userData['middle_name'] ?? null,
-                'ext' => $userData['ext'] ?? null,
-                'email' => $userData['role'] === "STUDENT" ? null : $userData["email"],
-                'password' => Hash::make($userData['password']),
-                'sex' => $userData['sex'],
-                'profile_picture' => $userData['profile_picture'],
-                'role' => $userData['role'],
-                'date_of_birth' => $userData['date_of_birth'],
-                'mobile_number' => $userData['mobile_number'],
-                'address' => $userData['address'],
-                'age' => $userData['age']
-            ]);
-
-            switch ($userData['role']) {
-                case 'STUDENT':
-                    Student::create([
-                        'user_id' => $user->id,
-                        'grade_level' => $data['student']['grade_level'],
-                        'mother_tongue' => $data['student']['mother_tongue'],
-                        'LRN' => $data['student']['LRN'],
-                        'current_school' => $data['student']['current_school'],
-                    ]);
-                    break;
-                case 'FACULTY':
-                    Faculty::create([
-                        'user_id' => $user->id,
-                        'position' => $data['faculty']['position'],
-                    ]);
-                    break;
-                case 'PRINCIPAL':
-                    Principal::create([
-                        'user_id' => $user->id,
-                        'year_started' => $data['principal']['year_started'],
-                    ]);
-                    break;
-                case 'GUARDIAN':
-                    Guardian::create([
-                        'user_id' => $user->id,
-                        'student_id' => $data['guardian']['student_id'],
-                        'mother_tongue' => $data['guardian']['mother_tongue'],
-                    ]);
-                    break;
-                default:
-                    return $this->respondError("Specified role is invalid", "INVALID_ROLE", 400);
-            }
-            return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
+     
         } catch (\Throwable $th) {
-            return response()->json(["message" => "Error: {$th->getMessage()} "], 400);
+            return response()->json(["message" => "Error: {$th->getMessage()} ", "ither"=> "trigger"], 500);
         }
     }
     public function sendVerification(User $user)
@@ -170,7 +174,6 @@ class AuthController extends Controller
             return response()->json(["message" => "Error: {$th->getMessage()} "], 400);
         }
     }
-
     public function login(LoginRequest $request)
     {
         try {
@@ -221,46 +224,83 @@ class AuthController extends Controller
         $user = $request->user();
         return response() -> json( $user);
     }
+    public function loadStudentData(User $user) {
+        if($user) {
+            $studentData = Student::where("user_id", $user->id)->first();
+            return response()->json([
+                "student_id" => $studentData->id,
+                "grade_level" => $studentData['grade_level'],
+                "mother_tongue" => $studentData['mother_tongue'],
+                "LRN" => $studentData['LRN']
+            ], 200);
+        }
+
+        return $this->respondError("Student data not found", "NOT_FOUND", 404);
+    }
+
+    public function loadAdminData(User $user) {
+        if($user) {
+            $adminData = Principal::where("user_id", $user->id)->first();
+            return response()->json([
+                "year_started" => $adminData['year_started'],
+                "year_ended" => $adminData['year_ended'],
+            ], 200);
+        }
+
+        return $this->respondError("Admin data not found", "NOT_FOUND", 404);
+    }
+
+    public function loadFacultyData(User $user) {
+        if($user) {
+            $facultyData = Faculty::where("user_id", $user->id)->first();
+            return response()->json([
+                "position" => $facultyData['position']
+            ], 200);
+        }
+
+        return $this->respondError("Faculty data not found", "NOT_FOUND", 404);
+    }
 
 
 
 
     //Login Utility function
-    private function getUserByRoleAndData($validated)
+    private function getUserByRoleAndData($userData)
     {
-        if ($validated['role'] === 'STUDENT') {
+        if ($userData['role'] === 'STUDENT') {
             // Ensure student_id is provided for student role
-            if(isset($validated['student_id'])) {
-                return $this->getUserForStudent($validated['student_id']);
-            } 
+            if(isset($userData['student_id'])) {
+                return $this->getUserForStudent($userData['student_id']);
+            }
+            return null;
         }
 
         // Handle other roles (FACULTY, PRINCIPAL, GUARDIAN)
-        if ($validated['role'] !== 'STUDENT') {
+        if ($userData['role'] !== 'STUDENT') {
             // Ensure email is provided
-            if(isset($validated['email'])) {
-                $user = $this->getUserByEmail($validated['email']);
+            if(isset($userData['email'])) {
+                $user = $this->getUserByEmail($userData['email']);
 
                
                 if($user) {
                      // Check if role matches
-                    if ($validated['role'] === $user->role) {
+                    if ($userData['role'] === $user->role) {
                         return $user;
                     } 
 
                     return null;
                 }
-
-                return null;       
-            }
+                return null;  
+                
+            }   
+        } else {
+            //if no user found returns null
+            return null;
         }
-
-        //if no user found returns null
-        return null;
     }
     private function getUserForStudent($studentId)
     {
-        $student = Student::find($studentId)->first();
+        $student = Student::find($studentId);
         if (!$student)  return null;
 
         $user = $student->user;
@@ -360,9 +400,6 @@ class AuthController extends Controller
 
         $user->delete();
     }
-
-
-
     //Resuable Error handler
     private function respondError($message, $errorCode, $status) {
         return response() -> json([
@@ -370,6 +407,4 @@ class AuthController extends Controller
             "error_code" => $errorCode
         ], $status);
     }
-
-
 }

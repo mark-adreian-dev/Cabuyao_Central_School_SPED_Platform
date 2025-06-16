@@ -15,7 +15,10 @@ Route::prefix("user")->group(function () {
     // Protected Routes for User (Requires Auth)
     Route::middleware(["auth:sanctum"])->group(function() {
         Route::get("/", [AuthController::class, 'loadUser']);
-        Route::post("/logout", [AuthController::class, 'logout']); // Log out (invalidate token)
+        Route::post("/logout", [AuthController::class, 'logout']); 
+        Route::get("/student-data/{user}", [AuthController::class, 'loadStudentData']); 
+        Route::get("/admin/{user}", [AuthController::class, 'loadAdminData']); 
+        Route::get("/faculty/{user}", [AuthController::class, 'loadFacultyData']); 
     });
 });
 

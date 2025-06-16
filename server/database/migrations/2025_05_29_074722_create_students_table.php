@@ -12,7 +12,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('students', function (Blueprint $table) {
-            $table->unsignedBigInteger('id')->primary();
+            $table->unsignedBigInteger('id')->autoIncrement()->primary();
             $table->foreignId('user_id')->constrained()->onDelete("cascade");
             $table->integer('grade_level');
             $table->string('mother_tongue');
@@ -20,11 +20,6 @@ return new class extends Migration {
             $table->string('current_school');
             $table->timestamps();
         });
-
-        $year = now()->format('y');
-        $startId = intval($year) * 1000;
-
-        DB::statement("ALTER TABLE students AUTO_INCREMENT = $startId;");
     }
 
     /**
