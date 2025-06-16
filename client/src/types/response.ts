@@ -9,3 +9,19 @@ export interface LoginSuccessResponse {
     message: string,
     token: string
 }
+
+export interface StudentResponse {
+    student_id: number,
+    grade_level: number,
+    mother_tongue: string,
+    LRN: string
+}
+
+export interface FacultyResponse {
+    position: number,
+}
+
+export interface PrincipalResponse {
+    year_started: number,
+    year_ended: number
+}

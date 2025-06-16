@@ -6,6 +6,7 @@ import AccountsPage from "./pages/Admin/AccountsPage";
 import { useContext } from "react";
 import { AuthContext } from "./context/Auth/AuthContext";
 import FacultyDashboard from "./layout/FacultyDashboard";
+import StudentDashboard from "./layout/StudentDashboard";
 import OTPVerificationPage from "./pages/OTPVerificationPage";
 
 function App() {
@@ -29,18 +30,28 @@ function App() {
           element={<Login accountType={AccountType.FACULTY} />}
         />
 
-        <Route path="/verify/account" element={<OTPVerificationPage />} />
+       
+        <Route path="/verify/account" element={<OTPVerificationPage />} /> :
+         
+
+        {/* Student Dashboard */}
+        {userData?.role == AccountType.STUDENT && (
+          <Route path="/student" element={<StudentDashboard />}>
+            <Route path="dashboard" element={<AccountsPage />} />
+          </Route>
+        )}
+
         {/* Principal Dashboard */}
-        {userData?.role == AccountType.PRINCIPAL && (
-          <Route path="/admin/dashboard" element={<AdminDashboard />}>
-            <Route path="accounts" element={<AccountsPage />} />
+        {(userData?.role == AccountType.PRINCIPAL && userData?.email_verified_at !== null) && (
+          <Route path="/admin" element={<AdminDashboard />}>
+            <Route path="dashboard" element={<AccountsPage />} />
           </Route>
         )}
 
         {/* Faculty Dashboard */}
-        {userData?.role == AccountType.FACULTY && (
-          <Route path="/faculty/dashboard" element={<FacultyDashboard />}>
-            <Route path="accounts" element={<AccountsPage />} />
+        {(userData?.role == AccountType.FACULTY && userData?.email_verified_at !== null) && (
+          <Route path="/faculty" element={<FacultyDashboard />}>
+            <Route path="dashboard" element={<AccountsPage />} />
           </Route>
         )}
       </Routes>

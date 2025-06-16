@@ -18,7 +18,7 @@ import {
 import { type SidebarType } from "@/types/sidebar";
 import { AuthContext } from "@/context/Auth/AuthContext";
 
-const FacultyDashboard: () => JSX.Element = () => {
+const StudentDashboard: () => JSX.Element = () => {
   const { userData } = useContext(AuthContext);
 
   const data: SidebarType = {
@@ -29,7 +29,7 @@ const FacultyDashboard: () => JSX.Element = () => {
     },
     navMain: [
       {
-        title: "FACULTY",
+        title: "STUDENT",
         url: "#",
         icon: IconUsers,
       },
@@ -138,4 +138,4 @@ const FacultyDashboard: () => JSX.Element = () => {
   );
 };
 
-export default FacultyDashboard;
+export default StudentDashboard;

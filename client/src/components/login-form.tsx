@@ -9,7 +9,7 @@ import { ResponseStatus } from "@/types/response";
 import { toast, Toaster } from "sonner";
 
 enum FormFields {
-  STUDENT_ID = "studentId",
+  STUDENT_ID = "student_id",
   PASSWORD = "password",
   EMAIL = "email",
 }
@@ -26,7 +26,7 @@ export function LoginForm({
   ...props
 }: LoginFormProps) {
   const [formData, setFormData] = useState<LoginFormInterface>({
-    studentId: "",
+    student_id: "",
     email: "",
     password: "",
     role: accountType,
@@ -49,7 +49,7 @@ export function LoginForm({
 
   const clearFormData = () => {
     setFormData({
-      studentId: "",
+      student_id: "",
       email: "",
       password: "",
       role: accountType,
@@ -94,7 +94,7 @@ export function LoginForm({
               id="userCredentials"
               type={accountType === AccountType.STUDENT ? "text" : "email"}
               placeholder={`Enter your ${
-                accountType === AccountType.STUDENT ? "student ID" : "email"
+                accountType === AccountType.STUDENT ? "Student ID" : "Email Address"
               }`}
               required
               name={
@@ -107,7 +107,7 @@ export function LoginForm({
               className={`${isError && "border-[1px] border-red-500"}`}
               value={
                 accountType == AccountType.STUDENT
-                  ? formData.studentId
+                  ? formData.student_id
                   : formData.email
               }
             />

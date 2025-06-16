@@ -19,7 +19,7 @@ import {
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/Auth/AuthContext";
 import { ResponseStatus } from "@/types/response";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { AccountType } from "@/types/utils";
 import Logo from "@/assets/GlobalAssets/Logo.png";
 import { toast, Toaster } from "sonner";
@@ -127,7 +127,6 @@ export function OTPVerificationPage() {
       }
     }
   };
-
   const redirect = () => {
     if (userData) {
       if (userData.role == AccountType.PRINCIPAL) {
@@ -139,6 +138,10 @@ export function OTPVerificationPage() {
       navigate("/login");
     }
   };
+
+  if (!userData) {
+    return <Navigate to={"/login"} />
+  }
 
   return (
     <>

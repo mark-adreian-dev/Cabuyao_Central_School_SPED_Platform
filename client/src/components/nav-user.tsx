@@ -17,9 +17,11 @@ import {
 } from "@/components/ui/sidebar";
 import { useContext } from "react";
 import { AuthContext } from "@/context/Auth/AuthContext";
-import type { User } from "@/types/models";
+import type { Student, Faculty, Principal } from "@/types/models";
+import { Navigate } from "react-router-dom";
+import { AccountType } from "@/types/utils";
 
-export function NavUser({ user }: { user: User }) {
+export function NavUser({ user }: { user: Student | Faculty | Principal | null }) {
   const { isMobile } = useSidebar();
   const { logout } = useContext(AuthContext);
   const handleLogout = async () => {
@@ -29,6 +31,10 @@ export function NavUser({ user }: { user: User }) {
       console.log(error);
     }
   };
+
+  if (!user) {
+    return <Navigate to={"/"} />
+  }
 
   return (
     <SidebarMenu>
@@ -49,10 +55,16 @@ export function NavUser({ user }: { user: User }) {
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{`${user.first_name} ${user.last_name}`}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
+                  {user.role === AccountType.STUDENT
+                    ? `Student No: ${(user as Student).student_id}`
+                    : user.role === AccountType.FACULTY
+                    ? (user as Faculty).email
+                    : user.role === AccountType.PRINCIPAL
+                    ? (user as Principal).email
+                    : null}
                 </span>
               </div>
-              <IconDotsVertical className="ml-auto size-4" />
+              <IconDotsVertical className="ml-auto size-4 cursor-pointer" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -73,14 +85,20 @@ export function NavUser({ user }: { user: User }) {
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{`${user.first_name} ${user.last_name}`}</span>
                   <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
+                    {user.role === AccountType.STUDENT
+                      ? `Student No: ${(user as Student).student_id}`
+                      : user.role === AccountType.FACULTY
+                      ? (user as Faculty).email
+                      : user.role === AccountType.PRINCIPAL
+                      ? (user as Principal).email
+                      : null}
                   </span>
                 </div>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:!bg-red-500">
               <IconLogout />
               Log out
             </DropdownMenuItem>

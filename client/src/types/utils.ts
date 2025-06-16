@@ -13,7 +13,7 @@ export enum AccountType {
 
 export interface LoginFormInterface {
     email: string,
-    studentId: string,
+    student_id: string,
     password: string,
     role: AccountType
 }

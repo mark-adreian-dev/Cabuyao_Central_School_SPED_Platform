@@ -3,7 +3,7 @@ import AuthReducer from "./AuthReducer";
 import { authInitalValue, AuthContext } from "./AuthContext";
 import { AccountType, type LoginFormInterface } from "@/types/utils";
 import api, { resetAuthToken, setAuthToken } from "@/lib/api";
-import { ResponseStatus, type LoginSuccessResponse } from "@/types/response";
+import { ResponseStatus, type FacultyResponse, type LoginSuccessResponse, type PrincipalResponse, type StudentResponse } from "@/types/response";
 import axios from "axios";
 import type { User } from "@/types/models";
 import { useNavigate } from "react-router-dom";
@@ -60,13 +60,19 @@ const AuthState: React.FC<Props> = ({ children }) => {
     else navigate("/login");
   }
   const authRedirect = (user: User) => {
-    if (user.email_verified_at === null) {
+    if (user.email_verified_at === null && user.role !== AccountType.STUDENT) {
       navigate("/verify/account");
     } else {
-      if (user.role == AccountType.PRINCIPAL) {
-        navigate("/admin/dashboard/accounts");
-      } else if (user.role == AccountType.FACULTY) {
-        navigate("/faculty/dashboard/accounts");
+      switch (user.role) {
+        case AccountType.STUDENT:
+          navigate("/student/dashboard");
+          break;
+        case AccountType.PRINCIPAL:
+          navigate("/admin/dashboard");
+          break;
+        case AccountType.FACULTY:
+          navigate("/faculty/dashboard");
+          break;
       }
     }
   }
@@ -121,20 +127,40 @@ const AuthState: React.FC<Props> = ({ children }) => {
   };
   const loadUser = async () => {
     try {
-      const response = await api.get("/api/user");
-      const user: User = response.data;
-      authDispatch({
-        type: "LOAD_USER",
-        payload: {
-          user: user,
-        },
-      });
-      authRedirect(user);
-      
+      const userResponse = await api.get("/api/user");
+      const user: User = userResponse.data;
+      const roleData = await loadRoleData(user.id, user.role);
+    
+      if (roleData) {
+        authDispatch({
+          type: "LOAD_USER",
+          payload: {
+            user: user,
+            roleData: roleData,
+          },
+        });
+        authRedirect(user);
+      }  
     } catch (err) {
       handleError(err);
     }
   };
+
+  const loadRoleData = async (userId: number, role: AccountType) => {
+    let endpoint = ""
+    if (role === AccountType.STUDENT) endpoint = `/api/user/student-data/${userId}`;
+    if (role === AccountType.FACULTY) endpoint = `/api/user/faculty/${userId}`;
+    if (role === AccountType.PRINCIPAL) endpoint = `/api/user/admin/${userId}`;
+
+    const response = await api.get(endpoint)  
+    const roleData: StudentResponse | FacultyResponse | PrincipalResponse = response.data
+    if (response.status === ResponseStatus.SUCCESS) {
+      return roleData;
+    } else {
+      return null
+    }
+  }
+
   const sendEmailVerification = async (userId: number) => {
     try {
       authDispatch({ type: "SET_IS_LOADING" })

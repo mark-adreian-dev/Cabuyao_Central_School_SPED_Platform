@@ -1,4 +1,4 @@
-import type { User } from "@/types/models";
+import type { Faculty, Principal, Student, User } from "@/types/models";
 import type { LoginFormInterface } from "@/types/utils";
 import { createContext } from "react";
 import type { AuthAction } from "./AuthReducer";
@@ -11,7 +11,7 @@ export interface AuthContextInitialValue {
   isError: boolean;
   successMessage: string;
   errorMessage: string;
-  userData: User | null;
+  userData: Student | Faculty | Principal | null;
 
   login: (
     credentials: LoginFormInterface

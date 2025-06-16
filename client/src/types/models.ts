@@ -18,3 +18,19 @@ export interface User {
     created_at: Date
     updated_at: Date
 }
+
+export interface Student extends User {
+    student_id: number,
+    grade_level: number,
+    mother_tongue: string,
+    LRN: string
+}
+
+export interface Faculty extends User{
+    position: number,
+}
+
+export interface Principal extends User {
+    year_started: number,
+    year_ended: number
+}

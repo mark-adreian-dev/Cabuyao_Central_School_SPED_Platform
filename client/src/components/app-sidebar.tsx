@@ -15,11 +15,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import type { SidebarType } from "@/types/sidebar";
-import type { User } from "@/types/models";
+import type { Faculty, Principal, Student } from "@/types/models";
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   data: SidebarType; // or use a specific type instead of `any`
-  userData: User | null;
+  userData: Student | Faculty | Principal | null;
 }
 
 export function AppSidebar({ data, userData, ...props }: AppSidebarProps) {
