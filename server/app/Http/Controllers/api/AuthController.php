@@ -111,7 +111,7 @@ class AuthController extends Controller
                     "code" => $code
                 ]);
                 Mail::to($user->email)->send(new EmailVerification($code));
-                return response()->json(['message' => 'Email Verification Sent', "user" => $user], 200);
+                return response()->json(['message' => 'Email Verification Sent', "user" => $user, "code" => $code], 200);
             } else {
                 return response() -> json([
                     "message" => "This account is already verified"
@@ -327,13 +327,8 @@ class AuthController extends Controller
     }
     private function generateToken($user) {
         return $user->createToken("app")->plainTextToken;
-
-       
     }
 
-
-
-    //Verify Code Utility functions
     private function isAccountVerified($user)
     {
         if (!$user) {
