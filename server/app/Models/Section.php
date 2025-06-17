@@ -21,6 +21,10 @@ class Section extends Model
         return $this->belongsToMany(Student::class, 'student_section', 'section_id', 'student_id');
     }
 
+    public function quizzes(){
+        return $this->belongsToMany(Quiz::class, 'quiz_sections', 'section_id', 'quiz_id');
+    }
+
     public function faculty()
     {
         return $this->belongsTo(Faculty::class);

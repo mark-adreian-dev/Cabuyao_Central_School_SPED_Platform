@@ -40,4 +40,12 @@ class Student extends Model
     {
         return $this->sections()->wherePivot('is_active', true)->first();
     }
+
+    public function quizzes(){
+        return $this->belongsToMany(Quiz::class, 'student_quizzes');
+    }
+
+    public function quizAnswers(){
+        return $this->hasMany(StudentQuizAnswer::class);
+    }
 }
