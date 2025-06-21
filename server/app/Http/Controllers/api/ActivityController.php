@@ -3,21 +3,19 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Activity;
+use App\Models\Quiz;
 use Illuminate\Http\Request;
 
-class QuizController extends Controller
+class ActivityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $activities = Activity::all();
+
+        return response()->json(["activities" => $activities], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //

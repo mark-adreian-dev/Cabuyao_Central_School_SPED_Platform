@@ -4,27 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class StudentQuiz extends Model
+class StudentActivity extends Model
 {
     protected $fillable = [
-        'quiz_id',
+        'activity_id',
         'student_id',
         'score',
+        'answer_file',
         'isPassing',
     ];
 
     protected $casts = [
-        'quiz_id' => 'integer',
+        'activity_id' => 'integer',
         'student_id' => 'integer',
         'score' => 'integer',
         'isPassing' => 'boolean',
     ];
 
-    public function quiz(){
-        return $this->belongsTo(Quiz::class);
+    public function activity()
+    {
+        return $this->belongsTo(Activity::class);
     }
 
-    public function student(){
+    public function student()
+    {
         return $this->belongsTo(Student::class);
     }
 }

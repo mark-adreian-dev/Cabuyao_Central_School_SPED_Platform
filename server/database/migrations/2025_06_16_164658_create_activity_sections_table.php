@@ -4,19 +4,16 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::create('quizzes', function (Blueprint $table) {
+        Schema::create('activity_sections', function (Blueprint $table) {
             $table->id();
-            $table->dateTime("deadline");
-            $table->integer("question_count");
-            $table->integer("perfect_score");
-            $table->integer("passing_score");
+            $table->foreignId('activity_id')->constrained();
+            $table->foreignId('section_id')->constrained()->onDelete("cascade");
             $table->timestamps();
         });
     }
@@ -26,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('quizzes');
+        Schema::dropIfExists('quiz_sections');
     }
 };
