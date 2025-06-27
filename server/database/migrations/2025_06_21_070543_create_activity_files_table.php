@@ -10,13 +10,10 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('activities', function (Blueprint $table) {
+        Schema::create('activity_files', function (Blueprint $table) {
             $table->id();
-            $table->dateTime("deadline");
-            $table->string("activity_description");
-            $table->integer("perfect_score");
-            $table->integer("passing_score");
-            $table->string("activity_question");
+            $table->foreignId('activity_id')->constrained();
+            $table->string("activity_file");
             $table->timestamps();
         });
     }
@@ -26,6 +23,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('quizzes');
+        Schema::dropIfExists('activity_files');
     }
 };

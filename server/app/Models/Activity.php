@@ -12,7 +12,7 @@ class Activity extends Model
         'perfect_score',
         'passing_score',
         'activity_question',
-        'activity_file'
+        'activity_description'
     ];
 
     protected $casts = [
@@ -26,6 +26,11 @@ class Activity extends Model
     {
         return $this->belongsToMany(Section::class, 'activity_sections', 'activity_id', 'section_id')
             ->withTimestamps();
+    }
+
+    public function files()
+    {
+        return $this->hasMany(ActivityFile::class);
     }
 
     public function studentActivities()
