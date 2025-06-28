@@ -38,7 +38,7 @@ Route::group(["prefix" => "sections", 'middleware' => ['auth:sanctum']], functio
 });
 
 Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], function () {
-    Route::post('/', [ActivityController::class, 'store']);
+    Route::post('/', [ActivityController::class, 'store'])->middleware('role:FACULTY');
     Route::get('/', [ActivityController::class, 'index']);
     // Route::get('/', [SectionController::class, 'index']);
     // Route::get('/{section}', [SectionController::class, 'show']);

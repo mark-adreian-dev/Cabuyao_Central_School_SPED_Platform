@@ -7,9 +7,9 @@ use App\Http\Requests\Activity\CreateActivityRequest;
 use App\Services\FileUploaderService;
 use App\Models\Activity;
 use App\Models\ActivityFile;
-use App\Models\Quiz;
+use App\Models\Faculty;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ActivityController extends Controller
 {
@@ -21,7 +21,7 @@ class ActivityController extends Controller
 
     public function index()
     {
-        $activities = Activity::with(["files"])->get();
+        $activities = Activity::with('files')->get();
         return response()->json(["activities" => $activities], 200);
     }
 
@@ -29,7 +29,9 @@ class ActivityController extends Controller
     {
         try {
             $validated = $request->validated();
+            $faculty = Faculty::where('user_id', Auth::id())->first();
             $activity = Activity::create([
+                "faculty_id" => $faculty->id,
                 "deadline" => $validated["deadline"],
                 "activity_description" => $validated["activity_description"],
                 "passing_score" => $validated["passing_score"],
@@ -45,7 +47,7 @@ class ActivityController extends Controller
             foreach ($paths as $path) {
                 ActivityFile::create([
                     'activity_id' => $activity->id,
-                    'activity_file' => Storage::disk('s3')->url($path)
+                    'activity_file' => $path
                 ]);
             }
 
@@ -63,6 +65,7 @@ class ActivityController extends Controller
      */
     public function show(Activity $activity)
     {
+        $activity->load('files');
         return response()->json(["activity" => $activity->with("files"), "sections" => $activity->with("sections")], 200);
     }
 

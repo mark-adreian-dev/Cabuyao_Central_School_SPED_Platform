@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Activity extends Model
 {
     protected $fillable = [
+        'faculty_id',
         'deadline',
         'question_count',
         'perfect_score',
@@ -16,6 +17,7 @@ class Activity extends Model
     ];
 
     protected $casts = [
+        'faculty_id' => 'integer',
         'deadline' => 'datetime',
         'question_count' => 'integer',
         'perfect_score' => 'integer',
