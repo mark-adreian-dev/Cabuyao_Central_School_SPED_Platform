@@ -49,7 +49,7 @@ class ActivityController extends Controller
                 ]);
             }
 
-            return response()->json(["message" => "Uploaded", "paths" => $paths, "activity" => $activity, "files" => $request->file("activity_files")], 201);
+            return response()->json(["message" => "Uploaded", "files" => $paths, "activity" => $activity], 201);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 500);
         }
@@ -61,9 +61,9 @@ class ActivityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Activity $activity)
     {
-        //
+        return response()->json(["activity" => $activity->with("files"), "sections" => $activity->with("sections")], 200);
     }
 
     /**
