@@ -45,7 +45,7 @@ class ActivityController extends Controller
             foreach ($paths as $path) {
                 ActivityFile::create([
                     'activity_id' => $activity->id,
-                    'activity_file' => $path
+                    'activity_file' => Storage::disk('s3')->url($path)
                 ]);
             }
 
