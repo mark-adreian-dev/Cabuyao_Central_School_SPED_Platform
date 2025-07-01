@@ -47,12 +47,12 @@ class SectionController extends Controller
     public function update(Request $request, Section $section)
     {
         $validated = $request->validate([
-            'grade_level' => 'required|integer',
-            'faculty_id' => 'required|exists:faculties,id',
-            'school_year' => 'required|string',
-            'isActive' => 'required|boolean',
-            'section_name' => 'required|string',
-            'section_description' => 'required|string',
+            'grade_level' => 'sometimes|integer',
+            'faculty_id' => 'sometimes|exists:faculties,id',
+            'school_year' => 'sometimes|string',
+            'isActive' => 'sometimes|boolean',
+            'section_name' => 'sometimes|string',
+            'section_description' => 'sometimes|string',
         ]);
         $section = Section::create($validated);
 
