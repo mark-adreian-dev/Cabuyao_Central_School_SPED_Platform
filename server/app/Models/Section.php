@@ -12,7 +12,8 @@ class Section extends Model
     {
         return [
             'grade_level' => 'integer',
-            'faculty_id' => 'integer'
+            'faculty_id' => 'integer',
+            'isActive' => 'boolean'
         ];
     }
 

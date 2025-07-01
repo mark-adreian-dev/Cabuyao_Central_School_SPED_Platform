@@ -43,29 +43,23 @@ class ActivityController extends Controller
             if ($request->hasFile('activity_files')) {
                 $paths = $this->fileUploader->storeFiles($request->file('activity_files'), 'activities', 's3');
             }
-
             foreach ($paths as $path) {
                 ActivityFile::create([
                     'activity_id' => $activity->id,
                     'activity_file' => $path
                 ]);
             }
-
             return response()->json(["message" => "Uploaded", "files" => $paths, "activity" => $activity], 201);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 500);
         }
-
-
-
     }
-
     /**
      * Display the specified resource.
      */
     public function show(Activity $activity)
     {
-        return response()->json(["activity" => $activity->with("files"), "sections" => $activity->with("sections")], 200);
+        return response()->json(["activity" => $activity->load("files", "sections")], 200);
     }
 
     /**
