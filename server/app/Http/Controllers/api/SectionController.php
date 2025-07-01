@@ -73,12 +73,11 @@ class SectionController extends Controller
         return response()->json(["sections" => $sections], 200);
     }
 
-    public function showActiveSections()
+    public function showActiveSections(bool $status)
     {
-        // $sections = Section::where('isActive', true)->with(['students.user', 'faculty.user'])->get();
-        // $sections = Section::all();
+        $sections = Section::where('isActive', $status)->with(['students.user', 'faculty.user'])->get();
 
-        return response()->json(["sections" => Section::all()], 200);
+        return response()->json(["sections" => $sections], 200);
     }
 
     public function showInactiveSections()

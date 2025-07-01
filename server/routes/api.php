@@ -30,8 +30,7 @@ Route::group(["prefix" => "sections", 'middleware' => ['auth:sanctum']], functio
     Route::put('/{section}', [SectionController::class, 'update'])->middleware('role:FACULTY,PRINCIPAL');
     Route::delete('/{section}', [SectionController::class, 'destroy'])->middleware('role:FACULTY,PRINCIPAL');
     Route::get('/student/{student}', [SectionController::class, 'showStudentSections'])->middleware('role:FACULTY,PRINCIPAL');
-    Route::get('/active', [SectionController::class, 'showActiveSections'])->middleware('role:FACULTY,PRINCIPAL');
-    Route::get('/inactive', [SectionController::class, 'showInactiveSections'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::get('/status/{status}', [SectionController::class, 'showActiveSections'])->middleware('role:FACULTY,PRINCIPAL');
     Route::get('/faculty/{faculty}', [SectionController::class, 'showFacultySections'])->middleware('role:FACULTY,PRINCIPAL');
     Route::post('/{section}/add-students', [SectionController::class, 'addStudentsToSection'])->middleware('role:FACULTY,PRINCIPAL');
     Route::delete('/{section}/remove-student/{student}', [SectionController::class, 'removeStudentsToSection'])->middleware('role:FACULTY,PRINCIPAL');
