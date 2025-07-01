@@ -26,15 +26,20 @@ class SectionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'section_name' => 'required|string',
             'grade_level' => 'required|integer',
             'faculty_id' => 'required|exists:faculties,id',
             'school_year' => 'required|string',
             'isActive' => 'required|boolean',
-            'section_name' => 'required|string',
-            'section_description' => 'required|string',
         ]);
 
-        $section = Section::create($validated);
+        $section = Section::create([
+            'section_name' => $validated['section_name'],
+            'grade_level' => $validated['grade_level'],
+            'faculty_id' => $validated['faculty_id'],
+            'school_year' => $validated['school_year'],
+            'isActive' => $validated['isActive'],
+        ]);
 
         return response()->json(["section" => $section], 201);
     }
