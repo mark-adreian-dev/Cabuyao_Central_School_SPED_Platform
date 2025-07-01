@@ -34,13 +34,15 @@ Route::group(["prefix" => "sections", 'middleware' => ['auth:sanctum']], functio
     Route::get('/inactive', [SectionController::class, 'showInactiveSections']);
     Route::get('/faculty/{faculty}', [SectionController::class, 'showFacultySections']);
     Route::post('/{section}/add-students', [SectionController::class, 'addStudentsToSection']);
-    Route::post('/{section}/add-students/{student}', [SectionController::class, 'addStudentToSection']);
+    // Route::post('/{section}/add-students/{student}', [SectionController::class, 'addStudentToSection']);
 });
 
 Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], function () {
     Route::post('/', [ActivityController::class, 'store'])->middleware('role:FACULTY');
     Route::get('/', [ActivityController::class, 'index']);
-    // Route::get('/', [SectionController::class, 'index']);
+    Route::get('/{activity}', [ActivityController::class, 'show']);
+    Route::put('/{activity}', [SectionController::class, 'update'])->middleware('role:FACULTY');
+    Route::delete('/{activity}', [SectionController::class, 'delete'])->middleware('role:FACULTY');
     // Route::get('/{section}', [SectionController::class, 'show']);
     // Route::put('/{section}', [SectionController::class, 'update']);
     // Route::delete('/{section}', [SectionController::class, 'destroy']);
