@@ -8,6 +8,7 @@ import { AuthContext } from "./context/Auth/AuthContext";
 import FacultyDashboard from "./layout/FacultyDashboard";
 import StudentDashboard from "./layout/StudentDashboard";
 import OTPVerificationPage from "./pages/OTPVerificationPage";
+import SectionPage from "./pages/Faculty/SectionPage";
 
 function App() {
   const { userData, isLoading } = useContext(AuthContext);
@@ -51,7 +52,7 @@ function App() {
         {/* Faculty Dashboard */}
         {(userData?.role == AccountType.FACULTY && userData?.email_verified_at !== null) && (
           <Route path="/faculty" element={<FacultyDashboard />}>
-            <Route path="dashboard" element={<AccountsPage />} />
+            <Route path="dashboard" element={<SectionPage />} />
           </Route>
         )}
       </Routes>

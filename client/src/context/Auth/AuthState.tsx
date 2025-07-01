@@ -1,4 +1,4 @@
-import React, { useReducer, type ReactNode } from "react";
+import React, { useEffect, useReducer, type ReactNode } from "react";
 import AuthReducer from "./AuthReducer";
 import { authInitalValue, AuthContext } from "./AuthContext";
 import { AccountType, type LoginFormInterface } from "@/types/utils";
@@ -21,6 +21,14 @@ const AUTH_STATE_TIMEOUT = 2500
 const AuthState: React.FC<Props> = ({ children }) => {
   const [authState, authDispatch] = useReducer(AuthReducer, authInitalValue);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setAuthToken(token);
+      loadUser();
+    }
+  }, [])
 
   const resetAuthState = () => {
     setTimeout(() => {
@@ -145,7 +153,6 @@ const AuthState: React.FC<Props> = ({ children }) => {
       handleError(err);
     }
   };
-
   const loadRoleData = async (userId: number, role: AccountType) => {
     let endpoint = ""
     if (role === AccountType.STUDENT) endpoint = `/api/user/student-data/${userId}`;
@@ -160,7 +167,6 @@ const AuthState: React.FC<Props> = ({ children }) => {
       return null
     }
   }
-
   const sendEmailVerification = async (userId: number) => {
     try {
       authDispatch({ type: "SET_IS_LOADING" })

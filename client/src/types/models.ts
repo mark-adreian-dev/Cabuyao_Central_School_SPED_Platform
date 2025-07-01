@@ -28,9 +28,18 @@ export interface Student extends User {
 
 export interface Faculty extends User{
     position: number,
+    user_id?: number
 }
 
 export interface Principal extends User {
     year_started: number,
     year_ended: number
+}
+
+
+export interface Section {
+    section_name: string,
+    school_year: string,
+    grade_level: number,
+    isActive: boolean
 }

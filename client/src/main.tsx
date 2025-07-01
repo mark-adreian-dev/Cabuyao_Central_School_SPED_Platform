@@ -4,12 +4,15 @@ import "./index.css";
 import App from "./App.tsx";
 import AuthState from "./context/Auth/AuthState.tsx";
 import { BrowserRouter } from "react-router-dom";
+import SectionState from "./context/Sections/SectionState.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthState>
-        <App />
+        <SectionState>
+          <App />
+        </SectionState>
       </AuthState>
     </BrowserRouter>
   </StrictMode>

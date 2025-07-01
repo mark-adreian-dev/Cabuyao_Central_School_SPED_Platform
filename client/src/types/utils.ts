@@ -17,3 +17,11 @@ export interface LoginFormInterface {
     password: string,
     role: AccountType
 }
+
+export interface AddSectionFormInterface {
+    section_name: string;
+    grade_level: number;
+    faculty_id: number;
+    school_year: string;
+    isActive: boolean;
+};

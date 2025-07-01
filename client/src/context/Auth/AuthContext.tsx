@@ -5,7 +5,7 @@ import type { AuthAction } from "./AuthReducer";
 import { ResponseStatus } from "@/types/response";
 
 export interface AuthContextInitialValue {
-  token: string;
+  token: string | null;
   isLoggedIn: boolean;
   isLoading: boolean;
   isError: boolean;
@@ -44,7 +44,7 @@ export interface AuthContextInitialValue {
 }
 
 export const authInitalValue: AuthContextInitialValue = {
-  token: "",
+  token: localStorage.getItem("token") && "",
   isLoggedIn: false,
   isLoading: false,
   isError: false,

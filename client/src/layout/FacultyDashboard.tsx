@@ -29,7 +29,7 @@ const FacultyDashboard: () => JSX.Element = () => {
     },
     navMain: [
       {
-        title: "FACULTY",
+        title: "Sections",
         url: "#",
         icon: IconUsers,
       },

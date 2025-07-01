@@ -15,6 +15,7 @@ export type AuthAction =
 const AuthReducer = (state: AuthContextInitialValue, action: AuthAction) => {
   switch (action.type) {
     case "LOGIN": {
+      localStorage.setItem("token", action.payload.token);
       return {
         ...state,
         token: action.payload.token,
@@ -84,6 +85,7 @@ const AuthReducer = (state: AuthContextInitialValue, action: AuthAction) => {
       };
     }
     case "LOGOUT": {
+      localStorage.removeItem("token")
       return {
         ...state,
         token: "",
