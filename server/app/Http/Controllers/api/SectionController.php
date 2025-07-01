@@ -39,9 +39,11 @@ class SectionController extends Controller
             'faculty_id' => $validated['faculty_id'],
             'school_year' => $validated['school_year'],
             'isActive' => $validated['isActive'],
-        ]);
+        ])->with(['students.user', 'faculty.user'])->get();
 
         return response()->json(["section" => $section], 201);
+
+        
     }
 
     public function update(Request $request, Section $section)
