@@ -26,6 +26,7 @@ class SectionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'section_name' => 'required|string',
             'grade_level' => 'required|integer',
             'faculty_id' => 'required|exists:faculties,id',
             'school_year' => 'required|string',
@@ -33,6 +34,7 @@ class SectionController extends Controller
         ]);
 
         $section = Section::create([
+            'section_name' => $validated['section_name'],
             'grade_level' => $validated['grade_level'],
             'faculty_id' => $validated['faculty_id'],
             'school_year' => $validated['school_year'],
