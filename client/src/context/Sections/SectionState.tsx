@@ -60,7 +60,7 @@ const SectionState: React.FC<Props> = ({ children }) => {
         },
       });
 
-      resetAuthState();
+      resetActionState();
     } else {
       // Fallback for unexpected error types
       sectionDispatch({
@@ -70,7 +70,7 @@ const SectionState: React.FC<Props> = ({ children }) => {
         },
       });
 
-      resetAuthState();
+      resetActionState();
     }
 
     return;
