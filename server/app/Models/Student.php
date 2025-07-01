@@ -33,7 +33,7 @@ class Student extends Model
 
     public function sections()
     {
-        return $this->belongsToMany(Section::class, 'student_sections', 'student_id', 'section_id');
+        return $this->belongsToMany(Section::class, 'student_section', 'student_id', 'section_id');
     }
 
     public function activeSection()

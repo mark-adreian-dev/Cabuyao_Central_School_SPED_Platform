@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Section extends Model
 {
-    protected $fillable = ['grade_level', 'faculty_id', 'school_year', 'isActive'];
+    protected $fillable = ['grade_level', 'faculty_id', 'school_year', 'isActive', 'section_name', 'section_description'];
 
     protected function casts(): array
     {

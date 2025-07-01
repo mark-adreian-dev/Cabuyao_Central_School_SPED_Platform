@@ -24,17 +24,17 @@ Route::prefix("user")->group(function () {
 });
 
 Route::group(["prefix" => "sections", 'middleware' => ['auth:sanctum']], function () {
-    Route::post('/', [SectionController::class, 'store']);
-    Route::get('/', [SectionController::class, 'index']);
+    Route::post('/', [SectionController::class, 'store'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::get('/', [SectionController::class, 'index'])->middleware('role:FACULTY,PRINCIPAL');
     Route::get('/{section}', [SectionController::class, 'show']);
-    Route::put('/{section}', [SectionController::class, 'update']);
-    Route::delete('/{section}', [SectionController::class, 'destroy']);
-    Route::get('/student/{student}', [SectionController::class, 'showStudentSections']);
-    Route::get('/active', [SectionController::class, 'showActiveSections']);
-    Route::get('/inactive', [SectionController::class, 'showInactiveSections']);
-    Route::get('/faculty/{faculty}', [SectionController::class, 'showFacultySections']);
-    Route::post('/{section}/add-students', [SectionController::class, 'addStudentsToSection']);
-    // Route::post('/{section}/add-students/{student}', [SectionController::class, 'addStudentToSection']);
+    Route::put('/{section}', [SectionController::class, 'update'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::delete('/{section}', [SectionController::class, 'destroy'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::get('/student/{student}', [SectionController::class, 'showStudentSections'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::get('/active', [SectionController::class, 'showActiveSections'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::get('/inactive', [SectionController::class, 'showInactiveSections'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::get('/faculty/{faculty}', [SectionController::class, 'showFacultySections'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::post('/{section}/add-students', [SectionController::class, 'addStudentsToSection'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::delete('/{section}/remove-student/{student}', [SectionController::class, 'removeStudentsToSection'])->middleware('role:FACULTY,PRINCIPAL');
 });
 
 Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], function () {
@@ -43,13 +43,4 @@ Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], funct
     Route::get('/{activity}', [ActivityController::class, 'show']);
     Route::put('/{activity}', [SectionController::class, 'update'])->middleware('role:FACULTY');
     Route::delete('/{activity}', [SectionController::class, 'delete'])->middleware('role:FACULTY');
-    // Route::get('/{section}', [SectionController::class, 'show']);
-    // Route::put('/{section}', [SectionController::class, 'update']);
-    // Route::delete('/{section}', [SectionController::class, 'destroy']);
-    // Route::get('/student/{student}', [SectionController::class, 'showStudentSections']);
-    // Route::get('/active', [SectionController::class, 'showActiveSections']);
-    // Route::get('/inactive', [SectionController::class, 'showInactiveSections']);
-    // Route::get('/faculty/{faculty}', [SectionController::class, 'showFacultySections']);
-    // Route::post('/{section}/add-students', [SectionController::class, 'addStudentsToSection']);
-    // Route::post('/{section}/add-students/{student}', [SectionController::class, 'addStudentToSection']);
 });

@@ -20,7 +20,7 @@ class SectionController extends Controller
 
     public function show(Section $section)
     {
-        return response()->json(["section" => $section->load(["students.user, faculty.user"])], 200);
+        return response()->json(["section" => $section->load("students.user", "faculty.user")], 200);
     }
 
     public function store(Request $request)
@@ -30,14 +30,11 @@ class SectionController extends Controller
             'faculty_id' => 'required|exists:faculties,id',
             'school_year' => 'required|string',
             'isActive' => 'required|boolean',
+            'section_name' => 'required|string',
+            'section_description' => 'required|string',
         ]);
 
-        $section = Section::create([
-            'grade_level' => $validated['grade_level'],
-            'faculty_id' => $validated['faculty_id'],
-            'school_year' => $validated['school_year'],
-            'isActive' => $validated['isActive'],
-        ]);
+        $section = Section::create($validated);
 
         return response()->json(["section" => $section], 201);
     }
@@ -49,13 +46,10 @@ class SectionController extends Controller
             'faculty_id' => 'required|exists:faculties,id',
             'school_year' => 'required|string',
             'isActive' => 'required|boolean',
+            'section_name' => 'required|string',
+            'section_description' => 'required|string',
         ]);
-        $section->update([
-            'grade_level' => $validated['grade_level'],
-            'faculty_id' => $validated['faculty_id'],
-            'school_year' => $validated['school_year'],
-            'isActive' => $validated['isActive'],
-        ]);
+        $section = Section::create($validated);
 
         return response()->json(["section" => $section], 200);
     }
@@ -76,16 +70,15 @@ class SectionController extends Controller
 
     public function showActiveSections()
     {
-        $sections = Section::where('isActive', true)->with(['students.user', 'faculty.user'])->get();
+        // $sections = Section::where('isActive', true)->with(['students.user', 'faculty.user'])->get();
+        // $sections = Section::all();
 
-        return response()->json(["sections" => $sections], 200);
+        return response()->json(["sections" => Section::all()], 200);
     }
 
     public function showInactiveSections()
     {
-        $sections = Section::where('isActive', false)->with(['students.user', 'faculty.user'])->get();
-
-        return response()->json(["sections" => $sections], 200);
+        return response()->json(["sections" => Section::where('isActive', false)->with(['students.user', 'faculty.user'])->get()], 200);
     }
 
     public function showFacultySections(Faculty $faculty)
@@ -122,7 +115,7 @@ class SectionController extends Controller
             return response()->json(
                 [
                     'message' => 'Students successfully added to the section.',
-                    "section" => $section->load(["students.user, faculty.user"])
+                    "section" => $section->load("students.user", "faculty.user")
                 ],
                 201
             );
@@ -132,25 +125,13 @@ class SectionController extends Controller
         }
     }
 
-    public function addStudentToSection(Section $section, Student $student)
+    public function removeStudentsToSection(Section $section, Student $student)
     {
-        try {
-            $activeSection = $student->activeSection();
-
-            if ($activeSection) {
-                return response()->json(["message" => "A student is already enlisted on an active section."], 400);
-            }
-            $section->students()->attach($student->id);
-            return response()->json(
-                [
-                    'message' => 'Students successfully added to the section.',
-                    "section" => $section->load(["students.user, faculty.user"])
-                ],
-                201
-            );
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 400);
+        $valid = $student->sections()->where('section_id', $section->id)->exists();
+        if (!$valid) {
+            return response()->json(["message" => "Student is not enrolled in selected section"], 400);
         }
+        $student->sections()->detach($section->id);
+        return response()->json(["message" => "Student removed successfully"], 200);
     }
 }
