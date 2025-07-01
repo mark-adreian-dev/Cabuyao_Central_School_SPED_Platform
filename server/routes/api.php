@@ -24,16 +24,18 @@ Route::prefix("user")->group(function () {
 });
 
 Route::group(["prefix" => "sections", 'middleware' => ['auth:sanctum']], function () {
-    Route::post('/', [SectionController::class, 'store'])->middleware('role:FACULTY,PRINCIPAL');
-    Route::get('/', [SectionController::class, 'index'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::post('/', [SectionController::class, 'store'])->middleware('role:FACULTY');
     Route::get('/{section}', [SectionController::class, 'show']);
-    Route::put('/{section}', [SectionController::class, 'update'])->middleware('role:FACULTY,PRINCIPAL');
-    Route::delete('/{section}', [SectionController::class, 'destroy'])->middleware('role:FACULTY,PRINCIPAL');
-    Route::get('/student/{student}', [SectionController::class, 'showStudentSections'])->middleware('role:FACULTY,PRINCIPAL');
-    Route::get('/status/{status}', [SectionController::class, 'showActiveSections'])->middleware('role:FACULTY,PRINCIPAL');
-    Route::get('/faculty/{faculty}', [SectionController::class, 'showFacultySections'])->middleware('role:FACULTY,PRINCIPAL');
-    Route::post('/{section}/add-students', [SectionController::class, 'addStudentsToSection'])->middleware('role:FACULTY,PRINCIPAL');
-    Route::delete('/{section}/remove-student/{student}', [SectionController::class, 'removeStudentsToSection'])->middleware('role:FACULTY,PRINCIPAL');
+    Route::get('/student/{student}', [SectionController::class, 'showStudentSections']);
+    Route::middleware(['role:FACULTY,PRINCIPAL'])->group(function () {
+        Route::get('/', [SectionController::class, 'index']);
+        Route::put('/{section}', [SectionController::class, 'update']);
+        Route::delete('/{section}', [SectionController::class, 'destroy']);
+        Route::get('/status/{status}', [SectionController::class, 'showActiveSections']);
+        Route::get('/faculty/{faculty}', [SectionController::class, 'showFacultySections']);
+        Route::post('/{section}/add-students', [SectionController::class, 'addStudentsToSection']);
+        Route::delete('/{section}/remove-student/{student}', [SectionController::class, 'removeStudentsToSection']);
+    });
 });
 
 Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], function () {
