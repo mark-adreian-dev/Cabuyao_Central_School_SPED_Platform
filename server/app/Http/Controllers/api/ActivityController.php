@@ -65,14 +65,13 @@ class ActivityController extends Controller
      */
     public function show(Activity $activity)
     {
-        $activity->load('files');
         return response()->json(["activity" => $activity->with("files"), "sections" => $activity->with("sections")], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Activity $activity)
     {
         //
     }
