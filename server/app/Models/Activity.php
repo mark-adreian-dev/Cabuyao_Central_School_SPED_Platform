@@ -26,7 +26,9 @@ class Activity extends Model
 
     public function sections()
     {
-        return $this->belongsToMany(Section::class, 'activity_sections', 'activity_id', 'section_id')
+        return $this
+            ->belongsToMany(Section::class, 'activity_sections', 'activity_id', 'section_id')
+            ->withPivot('deadline', 'grading_period')
             ->withTimestamps();
     }
 

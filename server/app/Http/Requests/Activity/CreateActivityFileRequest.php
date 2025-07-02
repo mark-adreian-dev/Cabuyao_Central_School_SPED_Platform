@@ -22,15 +22,7 @@ class CreateActivityFileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'activity_id' => 'required|string',
             'activity_file' => 'required|file|mimes:jpeg,png,jpg,gif,svg,pdf,docx|max:10240'
         ];
     }
-
-    // 'deadline',
-    // 'question_count',
-    // 'perfect_score',
-    // 'passing_score',
-    // 'activity_question',
-    // 'activity_file'
 }

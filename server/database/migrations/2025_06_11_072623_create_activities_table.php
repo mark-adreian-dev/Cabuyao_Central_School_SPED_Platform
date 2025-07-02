@@ -13,7 +13,6 @@ return new class extends Migration {
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
             $table->foreignId('faculty_id')->constrained()->onDelete("cascade");
-            $table->dateTime("deadline");
             $table->string("activity_description");
             $table->integer("perfect_score");
             $table->integer("passing_score");

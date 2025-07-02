@@ -43,22 +43,26 @@ class SectionController extends Controller
 
         return response()->json(["section" => $section], 201);
 
-        
+
     }
 
     public function update(Request $request, Section $section)
     {
-        $validated = $request->validate([
-            'grade_level' => 'sometimes|integer',
-            'faculty_id' => 'sometimes|exists:faculties,id',
-            'school_year' => 'sometimes|string',
-            'isActive' => 'sometimes|boolean',
-            'section_name' => 'sometimes|string',
-            'section_description' => 'sometimes|string',
-        ]);
-        $section = Section::create($validated);
+        try {
+            $validated = $request->validate([
+                'grade_level' => 'sometimes|integer',
+                'faculty_id' => 'sometimes|exists:faculties,id',
+                'school_year' => 'sometimes|string',
+                'isActive' => 'sometimes|boolean',
+                'section_name' => 'sometimes|string',
+                'section_description' => 'sometimes|string',
+            ]);
+            $section->update($validated);
 
-        return response()->json(["section" => $section], 200);
+            return response()->json(["section" => $section, "req" => $validated], 200);
+        } catch (\Throwable $th) {
+            return response()->json(["message" => $th->getMessage()], 400);
+        }
     }
 
     public function destroy(Section $section)

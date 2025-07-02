@@ -19,11 +19,21 @@ class Section extends Model
 
     public function students()
     {
-        return $this->belongsToMany(Student::class, 'student_sections', 'section_id', 'student_id');
+        return $this
+            ->belongsToMany(Student::class, 'student_sections', 'section_id', 'student_id')
+            ->withTimestamps();
     }
 
     public function faculty()
     {
         return $this->belongsTo(Faculty::class);
+    }
+
+    public function activities()
+    {
+        return $this
+            ->belongsToMany(Activity::class, 'activity_sections', 'section_id', 'activity_id')
+            ->withPivot('deadline', 'grading_period')
+            ->withTimestamps();
     }
 }

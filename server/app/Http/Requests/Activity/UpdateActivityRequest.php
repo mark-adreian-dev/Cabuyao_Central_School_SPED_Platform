@@ -4,7 +4,7 @@ namespace App\Http\Requests\Activity;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateActivityRequest extends FormRequest
+class UpdateActivityRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,12 +22,11 @@ class CreateActivityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'activity_description' => 'required|string',
-            'perfect_score' => 'required|integer',
-            'passing_score' => 'required|integer|lt:perfect_score',
-            'activity_question' => 'required|string',
-            'activity_files' => 'required|array',
-            'activity_files.*' => 'file|mimes:jpeg,png,jpg,gif,svg,pdf,docx|max:10240',
+            'deadline' => 'sometimes|date',
+            'activity_description' => 'sometimes|string',
+            'perfect_score' => 'sometimes|integer',
+            'passing_score' => 'sometimes|integer|lt:perfect_score',
+            'activity_question' => 'sometimes|string',
         ];
     }
 }

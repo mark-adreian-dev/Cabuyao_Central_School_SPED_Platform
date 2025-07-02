@@ -33,18 +33,15 @@ class FileUploaderService
     }
 
     /**
-     * Stores a single uploaded file.
+     * Delete a file from the given disk.
      *
-     * @param UploadedFile $file        The UploadedFile object.
-     * @param string       $directory   The directory within the disk to store the file.
-     * @param string       $disk        The storage disk to use.
-     * @return string|null              The path to the stored file, or null if the file is invalid.
+     * @param string $path
+     * @param string|null $disk
+     * @return bool
      */
-    public function storeSingleFile(UploadedFile $file, string $directory, string $disk = 'public'): ?string
+    public function deleteFile(string $path, string $disk = null): bool
     {
-        if ($file->isValid()) {
-            return Storage::disk($disk)->putFile($directory, $file);
-        }
-        return null;
+        $disk = $disk ?? config('filesystems.default');
+        return Storage::disk($disk)->delete($path);
     }
 }

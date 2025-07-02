@@ -12,8 +12,10 @@ return new class extends Migration {
     {
         Schema::create('activity_sections', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('activity_id')->constrained();
+            $table->foreignId('activity_id')->constrained()->onDelete("cascade");
             $table->foreignId('section_id')->constrained()->onDelete("cascade");
+            $table->dateTime("deadline");
+            $table->integer("grading_period");
             $table->timestamps();
         });
     }
