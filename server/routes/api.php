@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\api\ActivityController;
+use App\Http\Controllers\api\ActivityFileController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\SectionController;
 use Illuminate\Support\Facades\Route;
@@ -30,7 +31,7 @@ Route::group(["prefix" => "sections", 'middleware' => ['auth:sanctum']], functio
         Route::put('/{section}', [SectionController::class, 'update']);
         Route::delete('/{section}', [SectionController::class, 'destroy']);
         Route::post('/{section}/add-students', [SectionController::class, 'addStudentsToSection']);
-        Route::delete('/{section}/remove-student/{student}', [SectionController::class, 'removeStudentsToSection']);
+        Route::delete('/{section}/remove-student', [SectionController::class, 'removeStudentToSection']);
         Route::post('/', [SectionController::class, 'store']);
     });
     Route::middleware(['role:FACULTY,PRINCIPAL'])->group(function () {
@@ -51,5 +52,9 @@ Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], funct
         Route::delete('/{activity}', [SectionController::class, 'delete']);
         Route::post('/{activity}/add-section', [ActivityController::class, 'addActivityToSection']);
         Route::delete('/{activity}/remove-section', [ActivityController::class, 'removeActivityToSection']);
+        Route::get('/files', [ActivityFileController::class, 'index']);
+        Route::get('/files/{activityFile}', [ActivityFileController::class, 'show']);
+        Route::post('/{activity}/file-upload', [ActivityFileController::class, 'store']);
+        // Route::post('/{activity}/file-delete/{activityFile}', [ActivityFileController::class, 'destroy']);
     });
 });

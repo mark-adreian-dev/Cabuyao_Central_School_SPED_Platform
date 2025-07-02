@@ -114,7 +114,7 @@ class ActivityController extends Controller
                 'grading_period' => $validated['grading_period']
             ]);
 
-            return response()->json(["message" => "Activity added to section successfully"], 200);
+            return response()->json(["message" => "Activity added to section successfully", "activity" => $activity], 200);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 500);
         }
@@ -129,7 +129,7 @@ class ActivityController extends Controller
 
             $activity->sections()->detach($validated['section_id']);
 
-            return response()->json(["message" => "Activity removed from section successfully"], 200);
+            return response()->json(["message" => "Activity removed from section successfully", "activity" => $activity], 200);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 500);
         }

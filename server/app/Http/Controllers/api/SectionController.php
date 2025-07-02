@@ -135,8 +135,12 @@ class SectionController extends Controller
         }
     }
 
-    public function removeStudentsToSection(Section $section, Student $student)
+    public function removeStudentToSection(Request $request, Section $section)
     {
+        $validated = $request->validate([
+            'student_id' => 'required'
+        ]);
+        $student = Student::findOrFail($validated['student_id']);
         $valid = $student->sections()->where('section_id', $section->id)->exists();
         if (!$valid) {
             return response()->json(["message" => "Student is not enrolled in selected section"], 400);

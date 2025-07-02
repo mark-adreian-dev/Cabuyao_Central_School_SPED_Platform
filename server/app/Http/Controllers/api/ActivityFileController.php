@@ -56,12 +56,6 @@ class ActivityFileController extends Controller
         return response()->json(["activity_file" => $activityFile->load("activity")], 200);
     }
 
-    public function showByActivity(Activity $activity)
-    {
-        $activityFiles = $activity->files()->with('activity')->get();
-        return response()->json(["activity_files" => $activityFiles], 200);
-    }
-
     /**
      * Remove the specified resource from storage.
      */
