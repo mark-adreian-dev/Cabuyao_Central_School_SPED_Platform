@@ -48,8 +48,8 @@ Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], funct
 
     Route::middleware(['role:FACULTY'])->group(function () {
         Route::post('/', [ActivityController::class, 'store']);
-        Route::put('/{activity}', [SectionController::class, 'update']);
-        Route::delete('/{activity}', [SectionController::class, 'delete']);
+        Route::put('/{activity}', [ActivityController::class, 'update']);
+        Route::delete('/{activity}', [ActivityController::class, 'delete']);
         Route::post('/{activity}/add-section', [ActivityController::class, 'addActivityToSection']);
         Route::delete('/{activity}/remove-section', [ActivityController::class, 'removeActivityToSection']);
         Route::get('/files', [ActivityFileController::class, 'index']);
