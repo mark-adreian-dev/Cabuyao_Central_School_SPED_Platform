@@ -112,7 +112,7 @@ class ActivityController extends Controller
             $validated = $request->validate([
                 'section_id' => 'required|exists:sections,id',
                 'deadline' => 'required|date',
-                'grading_period' => 'required|integer',
+                'grading_period' => 'required|integer|min:1|max:4',
             ]);
 
             $activity->sections()->attach($validated['section_id'], [

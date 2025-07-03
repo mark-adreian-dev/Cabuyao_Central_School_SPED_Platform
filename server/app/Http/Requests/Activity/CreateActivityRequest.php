@@ -31,7 +31,7 @@ class CreateActivityRequest extends FormRequest
             'section_id' => 'required|array|min:1',
             'section_id.*' => 'required|exists:sections,id',
             'deadline' => 'required|date',
-            'grading_period' => 'required|integer',
+            'grading_period' => 'required|integer|min:1|max:4',
         ];
     }
 }
