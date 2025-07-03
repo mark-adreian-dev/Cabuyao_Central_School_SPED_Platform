@@ -28,6 +28,10 @@ class CreateActivityRequest extends FormRequest
             'activity_question' => 'required|string',
             'activity_files' => 'required|array',
             'activity_files.*' => 'file|mimes:jpeg,png,jpg,gif,svg,pdf,docx|max:10240',
+            'section_id' => 'required|array|min:1',
+            'section_id.*' => 'required|exists:sections,id',
+            'deadline' => 'required|date',
+            'grading_period' => 'required|integer',
         ];
     }
 }
