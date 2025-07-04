@@ -37,6 +37,11 @@ class StudentActivityController extends Controller
             $validated = $request->validated();
             if ($request->hasFile('answer_files')) {
 
+                $studentActivity = StudentActivity::create([
+                    'student_id' => $validated['student_id'],
+                    'activity_id' => $validated['activity_id'],
+                ]);
+
                 $paths = $this->fileUploader->storeFiles($request->file('answer_files'), 'student_activities', 's3');
 
                 if (!$paths) {
@@ -45,7 +50,7 @@ class StudentActivityController extends Controller
 
                 foreach ($paths as $path) {
                     StudentActivityFile::create([
-                        'student_id' => $validated['student_id'],
+                        'student_activity_id' => $studentActivity->id,
                         'activity_file' => $path
                     ]);
                 }
@@ -55,15 +60,6 @@ class StudentActivityController extends Controller
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 500);
         }
-        // $validated = $request->validated();
-        // $studentActivity = StudentActivity::create([
-        //     'student_id' => $validated['student_id'],
-        //     'activity_id' => $validated['activity_id'],
-        // ]);
-        // return response()->json([
-        //     "message" => "Student activity created successfully",
-        //     "student_activity" => $studentActivity
-        // ], 201);
     }
 
     /**
