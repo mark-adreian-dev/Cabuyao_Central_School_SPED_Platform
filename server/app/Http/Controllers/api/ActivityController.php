@@ -50,12 +50,7 @@ class ActivityController extends Controller
                     'activity_file' => $path
                 ]);
             }
-            foreach ($validated['section_id'] as $sectionId) {
-                $activity->sections()->attach($sectionId, [
-                    'deadline' => $validated['deadline'],
-                    'grading_period' => $validated['grading_period']
-                ]);
-            }
+
             return response()->json(["message" => "Uploaded", "files" => $paths, "activity" => $activity], 201);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 500);

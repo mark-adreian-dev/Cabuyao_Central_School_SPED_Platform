@@ -2,32 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
-class StudentActivity extends Model
+class StudentActivity extends Pivot
 {
-    protected $fillable = [
-        'activity_id',
-        'student_id',
-        'score',
-        'answer_file',
-        'isPassing',
-    ];
-
     protected $casts = [
-        'activity_id' => 'integer',
-        'student_id' => 'integer',
         'score' => 'integer',
         'isPassing' => 'boolean',
     ];
 
-    public function activity()
-    {
-        return $this->belongsTo(Activity::class);
-    }
-
-    public function student()
-    {
-        return $this->belongsTo(Student::class);
-    }
 }

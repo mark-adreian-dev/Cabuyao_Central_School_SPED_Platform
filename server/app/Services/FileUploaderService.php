@@ -15,7 +15,7 @@ class FileUploaderService
      * @param array<UploadedFile|mixed> $files       An array that may contain UploadedFile objects or other mixed types.
      * @param string                    $directory   The directory within the disk to store files (e.g., 'avatars', 'product_images').
      * @param string                    $disk        The storage disk to use (e.g., 'public', 's3').
-     * @return array<string>          An array of paths to the stored files.
+     * @return array<string>         An array of paths to the stored files.
      * Invalid or non-UploadedFile items are filtered out.
      */
     public function storeFiles(array $files, string $directory, string $disk): array

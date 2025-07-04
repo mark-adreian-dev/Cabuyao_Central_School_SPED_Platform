@@ -4,6 +4,7 @@ use App\Http\Controllers\api\ActivityController;
 use App\Http\Controllers\api\ActivityFileController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\SectionController;
+use App\Http\Controllers\api\StudentActivityController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -55,6 +56,10 @@ Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], funct
         Route::get('/files', [ActivityFileController::class, 'index']);
         Route::get('/files/{activityFile}', [ActivityFileController::class, 'show']);
         Route::post('/{activity}/file-upload', [ActivityFileController::class, 'store']);
-        // Route::post('/{activity}/file-delete/{activityFile}', [ActivityFileController::class, 'destroy']);
+        Route::get('/student', [StudentActivityController::class, 'index']);
+    });
+
+    Route::middleware(['role:STUDENT'])->group(function () {
+        Route::post('/student', [StudentActivityController::class, 'store']);
     });
 });
