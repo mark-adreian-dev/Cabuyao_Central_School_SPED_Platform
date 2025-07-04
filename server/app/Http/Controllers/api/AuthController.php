@@ -254,6 +254,7 @@ class AuthController extends Controller
         if($user) {
             $facultyData = Faculty::where("user_id", $user->id)->first();
             return response()->json([
+                "faculty_id" => $facultyData['id'],
                 "position" => $facultyData['position']
             ], 200);
         }
