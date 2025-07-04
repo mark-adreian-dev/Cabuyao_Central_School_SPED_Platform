@@ -40,18 +40,20 @@ class ActivityController extends Controller
                 "activity_question" => $validated["activity_question"],
             ]);
 
-            $paths = [];
+            $files = [];
             if ($request->hasFile('activity_files')) {
-                $paths = $this->fileUploader->storeFiles($request->file('activity_files'), 'activities', 's3');
+                $files = $this->fileUploader->storeFiles($request->file('activity_files'), 'activities', 's3');
             }
-            foreach ($paths as $path) {
+            foreach ($files as $file) {
                 ActivityFile::create([
                     'activity_id' => $activity->id,
-                    'activity_file' => $path
+                    'activity_file' => $file["path"],
+                    'file_name' => $file["file_name"],
+                    'file_size' => $file["file_size"],
                 ]);
             }
 
-            return response()->json(["message" => "Uploaded", "files" => $paths, "activity" => $activity], 201);
+            return response()->json(["message" => "Uploaded", "activity" => $activity->load("files")], 201);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 500);
         }

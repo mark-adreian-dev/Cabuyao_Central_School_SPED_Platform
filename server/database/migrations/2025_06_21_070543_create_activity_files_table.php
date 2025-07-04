@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('activity_id')->constrained();
             $table->string("activity_file");
+            $table->string("file_name");
+            $table->double("file_size");
             $table->timestamps();
         });
     }

@@ -11,8 +11,13 @@ class StudentActivityFile extends Model
     protected $fillable = [
         'student_activity_id',
         'activity_file',
+        'file_name',
+        'file_size',
     ];
 
+    protected $casts = [
+        'file_size' => 'double',
+    ];
     public function studentActivity()
     {
         return $this->belongsTo(StudentActivity::class);

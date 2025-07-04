@@ -11,6 +11,12 @@ class ActivityFile extends Model
     protected $fillable = [
         'activity_id',
         'activity_file',
+        'file_name',
+        'file_size',
+    ];
+
+    protected $casts = [
+        'file_size' => 'double',
     ];
 
     public function activity()

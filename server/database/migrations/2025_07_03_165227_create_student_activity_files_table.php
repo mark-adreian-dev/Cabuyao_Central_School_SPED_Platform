@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('student_activity_id')->constrained()->onDelete('cascade');
             $table->string('activity_file');
+            $table->string("file_name");
+            $table->string("file_size");
             $table->timestamps();
         });
     }
