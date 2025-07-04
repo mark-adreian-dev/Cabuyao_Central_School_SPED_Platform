@@ -4,11 +4,13 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Activity\CreateStudentActivityRequest;
+use App\Models\Activity;
 use App\Models\Student;
 use App\Models\StudentActivity;
 use App\Models\StudentActivityFile;
 use Illuminate\Http\Request;
 use App\Services\FileUploaderService;
+use Illuminate\Support\Facades\Auth;
 
 class StudentActivityController extends Controller
 {
@@ -37,8 +39,14 @@ class StudentActivityController extends Controller
             $validated = $request->validated();
             if ($request->hasFile('answer_files')) {
 
+                $activity = Activity::find($validated['activity_id']);
+                $isEnrolled = $activity->sections()->students()->where('student_id', $validated['student_id'])->first();
+                if (!$isEnrolled) {
+                    return response()->json(["message" => "You are not enrolled in this activity's section"], 403);
+                }
+
                 $studentActivity = StudentActivity::create([
-                    'student_id' => $validated['student_id'],
+                    'student_id' => auth()->id(),
                     'activity_id' => $validated['activity_id'],
                 ]);
 
@@ -54,7 +62,7 @@ class StudentActivityController extends Controller
                         'activity_file' => $path
                     ]);
                 }
-                return response()->json(["message" => "Submitted successfully"], 201);
+                return response()->json(["message" => "Submitted successfully", "student_activity" => $studentActivity], 201);
             }
             return response()->json(["message" => "No files uploaded"], 400);
         } catch (\Throwable $th) {
