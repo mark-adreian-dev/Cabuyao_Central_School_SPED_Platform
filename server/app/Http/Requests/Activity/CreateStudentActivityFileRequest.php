@@ -22,7 +22,8 @@ class CreateStudentActivityFileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'student_activity_id' => 'required|exists:student_activities,id',
+            'activity_file' => 'required|string',
         ];
     }
 }
