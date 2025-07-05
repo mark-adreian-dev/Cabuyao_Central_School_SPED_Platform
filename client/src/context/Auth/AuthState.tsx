@@ -3,7 +3,7 @@ import AuthReducer from "./AuthReducer";
 import { authInitalValue, AuthContext } from "./AuthContext";
 import { AccountType, type LoginFormInterface } from "@/types/utils";
 import api, { resetAuthToken, setAuthToken } from "@/lib/api";
-import { ResponseStatus, type FacultyResponse, type LoginSuccessResponse, type PrincipalResponse, type StudentResponse } from "@/types/response";
+import { ResponseStatus, type FacultyResponse, type LoginSuccessResponse, type PrincipalResponse, type StudentResponse } from "@/types/Response/AuthResponse";
 import axios from "axios";
 import type { User } from "@/types/models";
 import { useNavigate } from "react-router-dom";
@@ -79,7 +79,7 @@ const AuthState: React.FC<Props> = ({ children }) => {
           navigate("/admin/dashboard");
           break;
         case AccountType.FACULTY:
-          navigate("/faculty/dashboard");
+          navigate("/faculty/dashboard/sections");
           break;
       }
     }

@@ -11,6 +11,7 @@ import {
 import { SectionContext } from "@/context/Sections/SectionContext";
 import { EyeIcon, Trash } from "lucide-react";
 import { useContext } from "react";
+import { Link } from "react-router-dom";
 
 interface Props {
   sectionName: string;
@@ -62,10 +63,13 @@ const SectionTab = ({
           {description}
         </CardDescription>
         <CardAction className="">
-          <Button className="mr-2">
-            <EyeIcon />
-            Manage
-          </Button>
+          <Link to={`/faculty/dashboard/sections/${sectionId}`}>
+            <Button className="mr-2">
+              <EyeIcon />
+              Manage
+            </Button>
+          </Link>
+
           <Button
             size={"icon"}
             className="bg-red-500"

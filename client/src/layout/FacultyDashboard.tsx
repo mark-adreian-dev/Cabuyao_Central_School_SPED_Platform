@@ -5,11 +5,11 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import {
   IconCamera,
   IconDatabase,
+  IconFile,
   IconFileAi,
   IconFileDescription,
   IconFileWord,
   IconHelp,
-  IconListDetails,
   IconReport,
   IconSearch,
   IconSettings,
@@ -30,13 +30,13 @@ const FacultyDashboard: () => JSX.Element = () => {
     navMain: [
       {
         title: "Sections",
-        url: "#",
+        url: "/faculty/dashboard/sections",
         icon: IconUsers,
       },
       {
-        title: "IEP",
-        url: "/login",
-        icon: IconListDetails,
+        title: "Activities",
+        url: "/faculty/dashboard/activities",
+        icon: IconFile,
       },
     ],
     navClouds: [

@@ -98,8 +98,8 @@ export function NavUser({ user }: { user: Student | Faculty | Principal | null }
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:!bg-red-500">
-              <IconLogout />
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer hover:!bg-red-500 hover:!text-white">
+              <IconLogout className="hover:text-white"/>
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

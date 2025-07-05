@@ -34,6 +34,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { SectionContext } from "@/context/Sections/SectionContext";
 import type { AddSectionFormInterface } from "@/types/utils";
+import type { Faculty } from "@/types/models";
 
 const formSchema = z.object({
   section_name: z.string().min(2, {
@@ -51,7 +52,7 @@ export function AddSectionForm({ children }: { children: React.ReactNode }) {
   const { userData } = useContext(AuthContext);
   const { createSection } = useContext(SectionContext)
   const [open, setOpen] = useState(false);
-  // 1. Define your form.
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,17 +64,19 @@ export function AddSectionForm({ children }: { children: React.ReactNode }) {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
-   
+
     if (userData) {
+      console.log(userData.id);
       const newSectionData: AddSectionFormInterface = {
         section_name: values.section_name,
         grade_level: Number(values.grade_level),
-        faculty_id: Number(userData.id),
+        faculty_id: Number((userData as Faculty).faculty_id),
         school_year: `${new Date().getFullYear()}-${
           new Date().getFullYear() + 1
         }`,
         isActive: values.isActive === "true",
       };
+
       createSection(newSectionData)
       form.reset({
         section_name: "",

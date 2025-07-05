@@ -1,23 +1,9 @@
-// import { DataTable } from "@/components/data-table";
-import Sections from "@/components/FacultyPage/Section/Sections";
+import Sections from "@/components/FacultyPage/sectionList/SectionsList";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset } from "@/components/ui/sidebar";
-// import {
-//   IconCamera,
-//   IconDatabase,
-//   IconFileAi,
-//   IconFileDescription,
-//   IconFileWord,
-//   IconHelp,
-//   IconListDetails,
-//   IconReport,
-//   IconSearch,
-//   IconSettings,
-//   IconUsers,
-// } from "@tabler/icons-react";
 
 
-const SectionPage = () => {
+const SectionListPage = () => {
   return (
     <SidebarInset>
       <SiteHeader pageTitle="Sections" />
@@ -33,4 +19,4 @@ const SectionPage = () => {
   );
 };
 
-export default SectionPage;
+export default SectionListPage;

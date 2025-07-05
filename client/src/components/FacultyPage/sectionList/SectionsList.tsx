@@ -26,12 +26,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { SectionFacultyResponse } from "@/types/response";
+import type { SectionDataResponse } from "@/types/Response/SectionResponse";
 import { PlusCircle, SearchIcon, Trash } from "lucide-react";
 import { AddSectionForm } from "./AddSectionForm";
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const columns: ColumnDef<SectionFacultyResponse>[] = [
+export const columns: ColumnDef<SectionDataResponse>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -65,7 +65,7 @@ export const columns: ColumnDef<SectionFacultyResponse>[] = [
 
       const faculty = row.original.faculty;
       const user = faculty.user;
-      const facultyName = `${user.first_name} ${user.last_name}`
+      const facultyName = `${user.first_name} ${user.last_name}`;
 
       return (
         <SectionTab
@@ -90,13 +90,13 @@ export const columns: ColumnDef<SectionFacultyResponse>[] = [
   },
 ];
 
-const Sections = () => {
+const SectionList = () => {
   const { sections, deleteSection } = useContext(SectionContext);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const table = useReactTable<SectionFacultyResponse>({
+  const table = useReactTable<SectionDataResponse>({
     data: sections,
     columns,
     onSortingChange: setSorting,
@@ -116,7 +116,9 @@ const Sections = () => {
   });
 
   const handleDeleteSelection = () => {
-    const selectedData: SectionFacultyResponse[] = table.getSelectedRowModel().rows.map((row) => row.original);
+    const selectedData: SectionDataResponse[] = table
+      .getSelectedRowModel()
+      .rows.map((row) => row.original);
     const removeSection = async (sectionId: number) => {
       deleteSection(sectionId);
     }
@@ -128,8 +130,9 @@ const Sections = () => {
   return (
     <>
       <div className="w-full px-6">
-        <div className="flex justify-between items-center py-4 space-x-4">
-          <div className="w-md flex items-center p-1 border-[1px] border-ring-ring/50 rounded-md">
+        <h1 className="text-6xl font-bold">Sections</h1>
+        <div className="flex flex-col justify-between lg:flex-row lg:items-center py-4 space-x-4">
+          <div className="w-full mb-3  flex items-center p-1 border-[1px] border-ring-ring/50 rounded-md lg:w-md lg:mb-0">
             <SearchIcon className="text-muted-foreground" />
             <Input
               placeholder="Find Sections"
@@ -231,4 +234,4 @@ const Sections = () => {
   );
 };
 
-export default Sections;
+export default SectionList;

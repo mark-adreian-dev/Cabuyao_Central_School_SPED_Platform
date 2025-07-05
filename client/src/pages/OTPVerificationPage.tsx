@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/input-otp";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "@/context/Auth/AuthContext";
-import { ResponseStatus } from "@/types/response";
+import { ResponseStatus } from "@/types/Response/AuthResponse";
 import { Navigate, useNavigate } from "react-router-dom";
 import { AccountType } from "@/types/utils";
 import Logo from "@/assets/GlobalAssets/Logo.png";

@@ -1,10 +1,10 @@
 
-import type { SectionFacultyResponse } from "@/types/response";
+import type { SectionDataResponse } from "@/types/Response/SectionResponse";
 import type { AddSectionFormInterface } from "@/types/utils";
 import { createContext } from "react";
 
 export interface SectionContextInitialValue {
-  sections: SectionFacultyResponse[] | [];
+  sections: SectionDataResponse[] | [];
   isError: boolean;
   errorMessage: string;
   isLoading: boolean;

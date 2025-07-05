@@ -1,12 +1,15 @@
 import type { SectionContextInitialValue } from "./SectionContext";
-import type { SectionFacultyResponse } from "@/types/response";
+import type { SectionDataResponse } from "@/types/Response/SectionResponse";
 
 export type SectionAction =
-  | { type: "GET_ALL_SECTION", payload: { sections: SectionFacultyResponse[] } }
-  | { type: "REQUEST_ERROR", payload: { errorMessage: string } }
+  | { type: "GET_ALL_SECTION"; payload: { sections: SectionDataResponse[] } }
+  | { type: "REQUEST_ERROR"; payload: { errorMessage: string } }
   | { type: "RESET_REQUEST_STATUS" }
-  | { type: "SECTION_DELETED", payload: { section_id: number, successMessage: string } }
-  | { type: "ADD_SECTION", payload: { newSection: SectionFacultyResponse } }
+  | {
+      type: "SECTION_DELETED";
+      payload: { section_id: number; successMessage: string };
+    }
+  | { type: "ADD_SECTION"; payload: { newSection: SectionDataResponse } };
 
 
 const SectionReducer = (

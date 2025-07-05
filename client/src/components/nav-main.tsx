@@ -26,7 +26,7 @@ export function NavMain({
               <Link to={item.url}>
                 <SidebarMenuButton
                   tooltip={item.title}
-                  className="hover:bg-red-500 cursor-pointer"
+                  className="hover:bg-accent-foreground hover:text-white cursor-pointer"
                 >
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>

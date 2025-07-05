@@ -8,7 +8,9 @@ import { AuthContext } from "./context/Auth/AuthContext";
 import FacultyDashboard from "./layout/FacultyDashboard";
 import StudentDashboard from "./layout/StudentDashboard";
 import OTPVerificationPage from "./pages/OTPVerificationPage";
-import SectionPage from "./pages/Faculty/SectionPage";
+import SectionListPage from "./pages/Faculty/Section/SectionListPage";
+import SectionPage from "./pages/Faculty/Section/SectionPage";
+import ActivitiesListPage from "./pages/Faculty/Activities/ActivitiesListPage";
 
 function App() {
   const { userData, isLoading } = useContext(AuthContext);
@@ -52,7 +54,9 @@ function App() {
         {/* Faculty Dashboard */}
         {(userData?.role == AccountType.FACULTY && userData?.email_verified_at !== null) && (
           <Route path="/faculty" element={<FacultyDashboard />}>
-            <Route path="dashboard" element={<SectionPage />} />
+            <Route path="dashboard/sections" element={<SectionListPage />} />
+            <Route path="dashboard/sections/:section_id" element={<SectionPage />} />
+            <Route path="dashboard/activities" element={<ActivitiesListPage />} />
           </Route>
         )}
       </Routes>

@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useContext, useEffect, useState } from "react";
 import { AccountType, type LoginFormInterface } from "@/types/utils";
 import { AuthContext } from "@/context/Auth/AuthContext";
-import { ResponseStatus } from "@/types/response";
+import { ResponseStatus } from "@/types/Response/AuthResponse";
 import { toast, Toaster } from "sonner";
 
 enum FormFields {

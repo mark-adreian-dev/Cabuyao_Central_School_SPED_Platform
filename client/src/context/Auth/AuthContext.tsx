@@ -2,7 +2,7 @@ import type { Faculty, Principal, Student, User } from "@/types/models";
 import type { LoginFormInterface } from "@/types/utils";
 import { createContext } from "react";
 import type { AuthAction } from "./AuthReducer";
-import { ResponseStatus } from "@/types/response";
+import { ResponseStatus } from "@/types/Response/AuthResponse";
 
 export interface AuthContextInitialValue {
   token: string | null;

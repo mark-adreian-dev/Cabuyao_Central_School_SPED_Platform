@@ -1,6 +1,6 @@
 import type { Faculty, Principal, Student, User } from "@/types/models";
 import type { AuthContextInitialValue } from "./AuthContext";
-import type { FacultyResponse, PrincipalResponse, StudentResponse } from "@/types/response";
+import type { FacultyResponse, PrincipalResponse, StudentResponse } from "@/types/Response/AuthResponse";
 import { AccountType } from "@/types/utils";
 
 export type AuthAction =
