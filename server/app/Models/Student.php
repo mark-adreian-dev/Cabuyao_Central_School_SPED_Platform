@@ -41,8 +41,8 @@ class Student extends Model
         return $this->sections()->where('isActive', true)->first();
     }
 
-    public function activities()
+    public function studentActivities()
     {
-        return $this->belongsToMany(Activity::class, 'student_activities', 'student_id', 'activity_id');
+        return $this->hasMany(StudentActivity::class);
     }
 }

@@ -59,7 +59,10 @@ Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], funct
         Route::get('/student', [StudentActivityController::class, 'index']);
     });
 
+    Route::get('/student/{studentActivity}', [StudentActivityController::class, 'show']);
+
     Route::middleware(['role:STUDENT'])->group(function () {
         Route::post('/student', [StudentActivityController::class, 'store']);
+        Route::delete('/student/{studentActivity}', [StudentActivityController::class, 'destroy']);
     });
 });

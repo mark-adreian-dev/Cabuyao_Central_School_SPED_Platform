@@ -73,7 +73,7 @@ class ActivityController extends Controller
     {
         try {
             $validated = $request->validated();
-            $activity = $activity->update($validated);
+            $activity->update($validated);
             return response()->json(["activity" => $activity], 200);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 400);

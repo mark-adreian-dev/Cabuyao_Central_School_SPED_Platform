@@ -37,9 +37,9 @@ class Activity extends Model
         return $this->hasMany(ActivityFile::class);
     }
 
-    public function students()
+    public function studentActivities()
     {
-        return $this->belongsToMany(Activity::class, 'student_activities', 'activity_id', 'student_id');
+        return $this->hasMany(StudentActivity::class);
     }
 
 }

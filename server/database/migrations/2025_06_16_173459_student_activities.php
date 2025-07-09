@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->boolean("isPassing")->nullable();
             $table->timestamps();
         });
+
     }
 
     /**
@@ -25,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('student_quizzes');
+        Schema::dropIfExists('student_activities');
     }
 };

@@ -26,7 +26,7 @@ class CreateActivityRequest extends FormRequest
             'perfect_score' => 'required|integer',
             'passing_score' => 'required|integer|lt:perfect_score',
             'activity_question' => 'required|string',
-            'activity_files' => 'required|array',
+            'activity_files' => 'sometimes|array',
             'activity_files.*' => 'file|mimes:jpeg,png,jpg,gif,svg,pdf,docx|max:10240',
         ];
     }

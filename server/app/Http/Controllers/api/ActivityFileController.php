@@ -34,6 +34,11 @@ class ActivityFileController extends Controller
         try {
             if ($request->hasFile('activity_files')) {
                 $paths = $this->fileUploader->storeFiles($request->file('activity_files'), 'activities', 's3');
+
+                if (!$paths) {
+                    return response()->json(["message" => "File upload failed"], 500);
+                }
+
                 foreach ($paths as $path) {
                     ActivityFile::create([
                         'activity_id' => $activity->id,
