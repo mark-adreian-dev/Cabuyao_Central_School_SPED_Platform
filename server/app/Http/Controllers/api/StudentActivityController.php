@@ -29,8 +29,9 @@ class StudentActivityController extends Controller
      */
     public function index()
     {
+        $studentActivities = StudentActivity::with(['files', 'activity', 'student.user'])->get();
         return response()->json([
-            "student_activities" => StudentActivity::all()
+            "student_activities" => $studentActivities
         ], 200);
     }
 
@@ -53,12 +54,18 @@ class StudentActivityController extends Controller
                     return response()->json(["message" => "You are not enrolled in this activity's section", "isEnrolled" => $isEnrolled], 403);
                 }
 
+                $exists = StudentActivity::where('student_id', $studentId)
+                    ->where('activity_id', $validated['activity_id'])
+                    ->exists();
+
+                if ($exists) {
+                    return response()->json(["message" => "You have already submitted this activity"], 400);
+                }
+
                 $studentActivity = StudentActivity::create([
                     'student_id' => $studentId,
                     'activity_id' => $validated['activity_id'],
                 ]);
-
-
 
                 $paths = $this->fileUploader->storeFiles($request->file('activity_files'), 'student_activities', 's3');
 
@@ -89,6 +96,10 @@ class StudentActivityController extends Controller
      */
     public function show(StudentActivity $studentActivity)
     {
+        $studentId = Student::where('user_id', Auth::id())->value('id');
+        if ($studentActivity->student_id !== $studentId) {
+            return response()->json(["message" => "You are not unauthorized to access this data"], 401);
+        }
         return response()->json(["student_activity" => $studentActivity->load(['activity', 'files'])], 200);
     }
 
@@ -144,10 +155,25 @@ class StudentActivityController extends Controller
         return response()->json(["student_activities" => $activities], 200);
     }
 
-    public function getStudentActivitiesByStudent(Student $student)
+    public function getActivityBySection(Activity $activity, Section $section)
     {
+        $activities = StudentActivity::with(["files", "student.user"])
+            ->whereHas('activity.sections', function ($q) use ($section) {
+                $q->where('sections.id', $section->id);
+            })->whereHas('student.sections', function ($q) use ($section) {
+                $q->where('sections.id', $section->id);
+            })->get();
+        if ($activities->isEmpty()) {
+            return response()->json(["message" => "No student activities found for this section"], 404);
+        }
+        return response()->json(["student_activities" => $activities], 200);
+    }
+
+    public function getStudentActivitiesByStudent()
+    {
+        $studentId = Student::where('user_id', Auth::id())->value('id');
         $activities = StudentActivity::with(['activity', 'files'])
-            ->where('student_id', $student->id)
+            ->where('student_id', $studentId)
             ->get();
 
         return response()->json(["student_activities" => $activities], 200);

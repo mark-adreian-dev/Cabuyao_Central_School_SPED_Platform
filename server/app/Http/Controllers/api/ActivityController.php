@@ -93,7 +93,7 @@ class ActivityController extends Controller
             $activity->delete();
             return response()->json(['message' => 'Activity deleted successfully.'], 200);
         } catch (\Throwable $th) {
-            return response()->json(["message" => $th->getMessage()], 500);
+            return response()->json(["message" => $th->getMessage()], $th->getCode() ?: 500);
         }
     }
 

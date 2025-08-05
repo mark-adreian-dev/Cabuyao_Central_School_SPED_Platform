@@ -11,7 +11,7 @@ class CreateStudentActivityFileRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,7 @@ class CreateStudentActivityFileRequest extends FormRequest
     {
         return [
             'student_activity_id' => 'required|exists:student_activities,id',
-            'activity_file' => 'required|string',
+            'activity_file' => 'required|file|mimes:jpeg,png,jpg,gif,svg,pdf,docx|max:10240',
         ];
     }
 }

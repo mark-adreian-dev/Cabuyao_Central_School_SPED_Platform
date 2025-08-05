@@ -5,7 +5,9 @@ use App\Http\Controllers\api\ActivityFileController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\SectionController;
 use App\Http\Controllers\api\StudentActivityController;
+use App\Http\Controllers\api\StudentActivityFileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\api\LessonController;
 
 
 Route::prefix("user")->group(function () {
@@ -56,13 +58,43 @@ Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], funct
         Route::get('/files', [ActivityFileController::class, 'index']);
         Route::get('/files/{activityFile}', [ActivityFileController::class, 'show']);
         Route::post('/{activity}/file-upload', [ActivityFileController::class, 'store']);
+        Route::get('/{activity}/section/{section}', [StudentActivityController::class, 'getActivityBySection']);
         Route::get('/student', [StudentActivityController::class, 'index']);
     });
 
-    Route::get('/student/{studentActivity}', [StudentActivityController::class, 'show']);
 
-    Route::middleware(['role:STUDENT'])->group(function () {
-        Route::post('/student', [StudentActivityController::class, 'store']);
-        Route::delete('/student/{studentActivity}', [StudentActivityController::class, 'destroy']);
+
+    Route::group(["prefix" => "student", 'middleware' => ['role:STUDENT']], function () {
+        Route::post('/', [StudentActivityController::class, 'store']);
+        Route::delete('/{studentActivity}', [StudentActivityController::class, 'destroy']);
+        Route::post('/file-upload', [StudentActivityFileController::class, 'store']);
+        Route::post('/file-delete/{file}', [StudentActivityFileController::class, 'destroy']);
     });
+
+    Route::middleware(['role:FACULTY,STUDENT'])->group(function () {
+        Route::get('/student/{studentActivity}', [StudentActivityController::class, 'show']);
+        Route::get('/student/section/{section}', [StudentActivityController::class, 'getStudentActivitiesBySection']);
+        Route::get('/student/{studentActivity}/files', [StudentActivityController::class, 'getStudentActivityFiles']);
+    });
+});
+
+Route::group(["prefix" => "lessons", 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/', [LessonController::class, 'index']);
+    Route::get('/{lesson}', [LessonController::class, 'show']);
+
+    Route::middleware(['role:FACULTY'])->group(function () {
+        Route::post('/', [LessonController::class, 'store']);
+        Route::put('/{lesson}', [LessonController::class, 'update']);
+        Route::delete('/{lesson}', [LessonController::class, 'destroy']);
+        Route::post('/{lesson}/add-section', [LessonController::class, 'addLessonToSection']);
+        Route::delete('/{lesson}/remove-section', [LessonController::class, 'removeLessonFromSection']);
+        Route::post('/{lesson}/file-upload', [LessonController::class, 'addFileFromLesson']);
+        Route::post('/file-delete/{file}', [LessonController::class, 'removeFileFromLesson']);
+        Route::post('/{lesson}/add-link', [LessonController::class, 'addLessonLink']);
+        Route::delete('/remove-link/{link}', [LessonController::class, 'removeLessonLink']);
+        Route::get('/section/{section}', [LessonController::class, 'getLessonsBySection']);
+        Route::get('/faculty/{faculty}', [LessonController::class, 'getLessonsByFaculty']);
+        Route::get('/student/{student}', [LessonController::class, 'getLessonsByStudent']);
+    });
+
 });
