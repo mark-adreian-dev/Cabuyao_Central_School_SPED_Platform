@@ -38,6 +38,7 @@ class ActivityController extends Controller
                 "passing_score" => $validated["passing_score"],
                 "perfect_score" => $validated["perfect_score"],
                 "activity_question" => $validated["activity_question"],
+                "deadline" => $validated["deadline"],
             ]);
 
             $files = [];
@@ -73,7 +74,7 @@ class ActivityController extends Controller
     {
         try {
             $validated = $request->validated();
-            $activity = $activity->update($validated);
+            $activity->update($validated);
             return response()->json(["activity" => $activity], 200);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 400);
@@ -93,7 +94,7 @@ class ActivityController extends Controller
             $activity->delete();
             return response()->json(['message' => 'Activity deleted successfully.'], 200);
         } catch (\Throwable $th) {
-            return response()->json(["message" => $th->getMessage()], 500);
+            return response()->json(["message" => $th->getMessage()], $th->getCode() ?: 500);
         }
     }
 

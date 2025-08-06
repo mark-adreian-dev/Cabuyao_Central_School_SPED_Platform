@@ -10,14 +10,15 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('student_activity_files', function (Blueprint $table) {
+        Schema::create('student_activities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_activity_id')->constrained()->onDelete('cascade');
-            $table->string('activity_file');
-            $table->string("file_name");
-            $table->double("file_size");
+            $table->foreignId('activity_id')->constrained()->onDelete('cascade');
+            $table->foreignId('student_id')->constrained()->onDelete('cascade');
+            $table->integer("score")->nullable();
+            $table->boolean("isPassing")->nullable();
             $table->timestamps();
         });
+
     }
 
     /**
@@ -25,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('student_activity_files');
+        Schema::dropIfExists('student_activities');
     }
 };

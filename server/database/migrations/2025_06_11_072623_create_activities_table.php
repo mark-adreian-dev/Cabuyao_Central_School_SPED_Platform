@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->integer("perfect_score");
             $table->integer("passing_score");
             $table->string("activity_question");
+            $table->dateTime('deadline');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('quizzes');
+        Schema::dropIfExists('activities');
     }
 };

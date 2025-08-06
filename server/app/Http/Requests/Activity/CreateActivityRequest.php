@@ -26,6 +26,7 @@ class CreateActivityRequest extends FormRequest
             'perfect_score' => 'required|integer',
             'passing_score' => 'required|integer|lt:perfect_score',
             'activity_question' => 'required|string',
+            'deadline' => 'required|date_format:Y-m-d H:i:s',
             'activity_files' => 'array',
             'activity_files.*' => 'file|mimes:jpeg,png,jpg,gif,svg,pdf,docx|max:10240',
         ];
