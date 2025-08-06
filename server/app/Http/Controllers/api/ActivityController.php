@@ -38,6 +38,7 @@ class ActivityController extends Controller
                 "passing_score" => $validated["passing_score"],
                 "perfect_score" => $validated["perfect_score"],
                 "activity_question" => $validated["activity_question"],
+                "deadline" => $validated["deadline"],
             ]);
 
             $files = [];
