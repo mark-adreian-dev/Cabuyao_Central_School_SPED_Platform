@@ -138,4 +138,45 @@ class ActivityController extends Controller
             return response()->json(["message" => $th->getMessage()], 500);
         }
     }
+
+    public function removeFileFromActivity(Request $request, Activity $activity)
+    {
+        try {
+            $validated = $request->validate([
+                'activity_file_id' => 'required|exists:activity_files,id',
+            ]);
+
+            $file = $activity->files()->findOrFail($validated['activity_file_id']);
+            $this->fileUploader->deleteFile($file->activity_file, 's3');
+            $file->delete();
+
+            return response()->json(["message" => "File removed from activity successfully"], 200);
+        } catch (\Throwable $th) {
+            return response()->json(["message" => $th->getMessage()], 500);
+        }
+    }
+
+    public function addFileFromActivity(Request $request, Activity $activity)
+    {
+        try {
+            if ($request->hasFile('activity_files')) {
+                $paths = $this->fileUploader->storeFiles($request->file('activity_files'), 'activities', 's3');
+
+                if (!$paths) {
+                    return response()->json(["message" => "File upload failed"], 500);
+                }
+
+                foreach ($paths as $path) {
+                    ActivityFile::create([
+                        'activity_id' => $activity->id,
+                        'activity_file' => $path
+                    ]);
+                }
+                return response()->json(["message" => "Files uploaded successfully", "files" => $paths], 201);
+            }
+            return response()->json(["message" => "No files uploaded"], 400);
+        } catch (\Throwable $th) {
+            return response()->json(["message" => $th->getMessage()], 500);
+        }
+    }
 }
