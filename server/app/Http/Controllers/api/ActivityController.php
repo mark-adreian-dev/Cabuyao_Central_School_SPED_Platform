@@ -75,7 +75,7 @@ class ActivityController extends Controller
         try {
             $validated = $request->validated();
             $activity->update($validated);
-            return response()->json(["activity" => $activity], 200);
+            return response()->json(["activity" => $activity->load(["files", "sections"])], 200);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 400);
         }
