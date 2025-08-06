@@ -139,14 +139,9 @@ class ActivityController extends Controller
         }
     }
 
-    public function removeFileFromActivity(Request $request, Activity $activity)
+    public function removeFileFromActivity(ActivityFile $file)
     {
         try {
-            $validated = $request->validate([
-                'activity_file_id' => 'required|exists:activity_files,id',
-            ]);
-
-            $file = $activity->files()->findOrFail($validated['activity_file_id']);
             $this->fileUploader->deleteFile($file->activity_file, 's3');
             $file->delete();
 
@@ -169,7 +164,9 @@ class ActivityController extends Controller
                 foreach ($paths as $path) {
                     ActivityFile::create([
                         'activity_id' => $activity->id,
-                        'activity_file' => $path
+                        'activity_file' => $path["path"],
+                        'file_name' => $path["file_name"],
+                        'file_size' => $path["file_size"],
                     ]);
                 }
                 return response()->json(["message" => "Files uploaded successfully", "files" => $paths], 201);

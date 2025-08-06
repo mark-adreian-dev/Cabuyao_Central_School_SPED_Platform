@@ -56,12 +56,10 @@ Route::group(["prefix" => "activities", 'middleware' => ['auth:sanctum']], funct
         Route::post('/{activity}/add-section', [ActivityController::class, 'addActivityToSection']);
         Route::delete('/{activity}/remove-section', [ActivityController::class, 'removeActivityToSection']);
         Route::get('/files', [ActivityFileController::class, 'index']);
-        Route::get('/files/{activityFile}', [ActivityFileController::class, 'show']);
-        Route::post('/{activity}/file-upload', [ActivityFileController::class, 'store']);
         Route::get('/{activity}/section/{section}', [StudentActivityController::class, 'getActivityBySection']);
         Route::get('/student', [StudentActivityController::class, 'index']);
-        Route::post('/file-upload', [ActivityController::class, 'addFileFromActivity']);
-        Route::post('/file-delete/{activity}', [ActivityController::class, 'removeFileFromActivity']);
+        Route::post('{activity}/file-upload', [ActivityController::class, 'addFileFromActivity']);
+        Route::delete('/file-delete/{file}', [ActivityController::class, 'removeFileFromActivity']);
     });
 
 
