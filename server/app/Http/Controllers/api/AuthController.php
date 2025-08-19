@@ -32,7 +32,7 @@ class AuthController extends Controller
             if ($existingUser) {
                 return response()->json(['message' => 'Email has already been used.'], 409);
             } else {
-                
+
                 $user = User::create([
                     'first_name' => $userData['first_name'],
                     'last_name' => $userData['last_name'],
@@ -89,9 +89,9 @@ class AuthController extends Controller
             }
 
 
-     
+
         } catch (\Throwable $th) {
-            return response()->json(["message" => "Error: {$th->getMessage()} ", "ither"=> "trigger"], 500);
+            return response()->json(["message" => "Error: {$th->getMessage()} ", "ither" => "trigger"], 500);
         }
     }
     public function sendVerification(User $user)
@@ -99,12 +99,12 @@ class AuthController extends Controller
         try {
             if ($user->role === "STUDENT") {
                 return response()->json(['message' => 'Students are not required to validate email'], 400);
-            }
-            else if($user->email_verified_at == null) {
+            } else if ($user->email_verified_at == null) {
                 $code = strtoupper(Str::random(6));
 
                 $otp = $this->getOtpForUser($user);
-                if($otp) $otp->delete();
+                if ($otp)
+                    $otp->delete();
 
                 EmailVerificationOtp::create([
                     "user_id" => $user->id,
@@ -113,11 +113,11 @@ class AuthController extends Controller
                 Mail::to($user->email)->send(new EmailVerification($code));
                 return response()->json(['message' => 'Email Verification Sent', "user" => $user, "code" => $code], 200);
             } else {
-                return response() -> json([
+                return response()->json([
                     "message" => "This account is already verified"
                 ], 200);
             }
-            
+
         } catch (\Throwable $th) {
             return response()->json(["message" => "Error: {$th->getMessage()} ", "user" => $user], 500);
         }
@@ -125,51 +125,51 @@ class AuthController extends Controller
     public function verifyCode(Request $request, User $user)
     {
         try {
-        // Validate the code
-        $validated = $request->validate(['code' => 'required']);
+            // Validate the code
+            $validated = $request->validate(['code' => 'required']);
 
-        // Check if user exists and is not already verified
-        if($this->isAccountVerified($user)){
-            return response() -> json([
-                "message" => "Account is already verified."
-            ], 200);
-        }
+            // Check if user exists and is not already verified
+            if ($this->isAccountVerified($user)) {
+                return response()->json([
+                    "message" => "Account is already verified."
+                ], 200);
+            }
 
-        // Get the OTP associated with the user
-        $otp = $this->getOtpForUser($user);
+            // Get the OTP associated with the user
+            $otp = $this->getOtpForUser($user);
 
-        if($otp) {
-            // Check if OTP is expired
-            if(!$this->isOTPExpired($otp)) {
-                
-                // Verify the code entered by the user
-                if($this->isOTPMatched($validated['code'], $otp)) {
+            if ($otp) {
+                // Check if OTP is expired
+                if (!$this->isOTPExpired($otp)) {
 
-                    // Delete the OTP after verification
-                    $otp->delete();
+                    // Verify the code entered by the user
+                    if ($this->isOTPMatched($validated['code'], $otp)) {
 
-                    // Mark the user's email as verified
-                    $this->verifyUser($user);
+                        // Delete the OTP after verification
+                        $otp->delete();
 
-                    return response()->json([
-                        'message' => 'Verification Successful!',
-                    ]);
+                        // Mark the user's email as verified
+                        $this->verifyUser($user);
+
+                        return response()->json([
+                            'message' => 'Verification Successful!',
+                        ]);
+
+                    } else {
+                        //If otp does not match
+                        return $this->respondError("OTP does not match", "MISMATCHED_OTP", 400);
+                    }
 
                 } else {
-                    //If otp does not match
-                    return $this->respondError("OTP does not match", "MISMATCHED_OTP", 400);
+                    //If OTP is expired
+                    return $this->respondError("OTP associated to this account has expired", "EXPIRED_OTP", 400);
                 }
-               
             } else {
-                //If OTP is expired
-                return $this->respondError("OTP associated to this account has expired", "EXPIRED_OTP", 400);
+                //If there is no existing OTP associated to this user account
+                return $this->respondError("There is no existing OTP for this account", "NO_OTP", 404);
             }
-        } else {
-            //If there is no existing OTP associated to this user account
-            return $this->respondError("There is no existing OTP for this account", "NO_OTP", 404);
-        }
 
-        
+
         } catch (\Throwable $th) {
             return response()->json(["message" => "Error: {$th->getMessage()} "], 400);
         }
@@ -183,29 +183,30 @@ class AuthController extends Controller
             // Determine role and fetch user
             $user = $this->getUserByRoleAndData($validated);
 
-            if($user) {
+            if ($user) {
                 // Check password validity
-                if($this->checkPassword($user, $validated['password'])) {
-                     // Generate token for valid user
+                if ($this->checkPassword($user, $validated['password'])) {
+                    // Generate token for valid user
                     $token = $this->generateToken($user);
 
                     return response()->json([
                         'message' => 'Logged in successfully',
-                        'token' => $token
+                        'token' => $token,
+                        "user" => $user
                     ], 200);
                 } else {
                     //If no user is found or there is a role mismatch
-                     return $this->respondError( "Invalid credentials please try again", "INVALID_CREDENTIALS", 401);
+                    return $this->respondError("Invalid credentials please try again", "INVALID_CREDENTIALS", 401);
                 }
-                
-                
-               
+
+
+
             } else {
                 //If no user is found or there is a role mismatch
-                return $this->respondError( "Invalid credentials please try again", "INVALID_CREDENTIALS", 401);
+                return $this->respondError("Invalid credentials please try again", "INVALID_CREDENTIALS", 401);
             }
 
-          
+
 
         } catch (\Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 500);
@@ -220,12 +221,14 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Logged out successfully']);
     }
-    public function loadUser(Request $request) {
+    public function loadUser(Request $request)
+    {
         $user = $request->user();
-        return response() -> json( $user);
+        return response()->json($user);
     }
-    public function loadStudentData(User $user) {
-        if($user) {
+    public function loadStudentData(User $user)
+    {
+        if ($user) {
             $studentData = Student::where("user_id", $user->id)->first();
             return response()->json([
                 "student_id" => $studentData->id,
@@ -238,8 +241,9 @@ class AuthController extends Controller
         return $this->respondError("Student data not found", "NOT_FOUND", 404);
     }
 
-    public function loadAdminData(User $user) {
-        if($user) {
+    public function loadAdminData(User $user)
+    {
+        if ($user) {
             $adminData = Principal::where("user_id", $user->id)->first();
             return response()->json([
                 "year_started" => $adminData['year_started'],
@@ -250,8 +254,9 @@ class AuthController extends Controller
         return $this->respondError("Admin data not found", "NOT_FOUND", 404);
     }
 
-    public function loadFacultyData(User $user) {
-        if($user) {
+    public function loadFacultyData(User $user)
+    {
+        if ($user) {
             $facultyData = Faculty::where("user_id", $user->id)->first();
             return response()->json([
                 "faculty_id" => $facultyData['id'],
@@ -270,7 +275,7 @@ class AuthController extends Controller
     {
         if ($userData['role'] === 'STUDENT') {
             // Ensure student_id is provided for student role
-            if(isset($userData['student_id'])) {
+            if (isset($userData['student_id'])) {
                 return $this->getUserForStudent($userData['student_id']);
             }
             return null;
@@ -279,21 +284,21 @@ class AuthController extends Controller
         // Handle other roles (FACULTY, PRINCIPAL, GUARDIAN)
         if ($userData['role'] !== 'STUDENT') {
             // Ensure email is provided
-            if(isset($userData['email'])) {
+            if (isset($userData['email'])) {
                 $user = $this->getUserByEmail($userData['email']);
 
-               
-                if($user) {
-                     // Check if role matches
+
+                if ($user) {
+                    // Check if role matches
                     if ($userData['role'] === $user->role) {
                         return $user;
-                    } 
+                    }
 
                     return null;
                 }
-                return null;  
-                
-            }   
+                return null;
+
+            }
         } else {
             //if no user found returns null
             return null;
@@ -302,10 +307,12 @@ class AuthController extends Controller
     private function getUserForStudent($studentId)
     {
         $student = Student::find($studentId);
-        if (!$student)  return null;
+        if (!$student)
+            return null;
 
         $user = $student->user;
-        if (!$user) return null;
+        if (!$user)
+            return null;
 
         return $user;
     }
@@ -326,7 +333,8 @@ class AuthController extends Controller
 
         return false;
     }
-    private function generateToken($user) {
+    private function generateToken($user)
+    {
         return $user->createToken("app")->plainTextToken;
     }
 
@@ -337,13 +345,15 @@ class AuthController extends Controller
         }
 
         if ($user->email_verified_at !== null) {
-            return $this->respondError("User already verified","ALREADY_VERIFIED",404);
-        } 
+            return $this->respondError("User already verified", "ALREADY_VERIFIED", 404);
+        }
     }
     private function getOtpForUser($user)
     {
         $otp = EmailVerificationOtp::where('user_id', $user->id)->first();
-        if ($otp) { return $otp; }
+        if ($otp) {
+            return $otp;
+        }
         return null;
     }
     private function isOTPExpired($otp)
@@ -356,26 +366,28 @@ class AuthController extends Controller
     }
     private function isOTPMatched($inputCode, $otp)
     {
-        if ($inputCode == $otp->code) { 
-            
-            return true; 
+        if ($inputCode == $otp->code) {
+
+            return true;
         }
         return false;
     }
-    private function verifyUser($user) {
+    private function verifyUser($user)
+    {
         $user->email_verified_at = now();
         $user->save();
 
-        
+
     }
 
 
 
     //Registration utility function 
-    public function removeExistingUser($user) {
+    public function removeExistingUser($user)
+    {
         $role = $user->role;
 
-        switch($role) {
+        switch ($role) {
             case "STUDENT":
                 $account = Student::where("user_id", $user->id);
                 $account->delete();
@@ -397,8 +409,9 @@ class AuthController extends Controller
         $user->delete();
     }
     //Resuable Error handler
-    private function respondError($message, $errorCode, $status) {
-        return response() -> json([
+    private function respondError($message, $errorCode, $status)
+    {
+        return response()->json([
             "message" => $message,
             "error_code" => $errorCode
         ], $status);
