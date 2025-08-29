@@ -20,7 +20,7 @@ class SectionController extends Controller
 
     public function show(Section $section)
     {
-        return response()->json(["section" => $section->load("students.user", "faculty.user")], 200);
+        return response()->json(["section" => $section->load("students.user", "students.disabilities", "faculty.user")], 200);
     }
 
     public function store(Request $request)
@@ -31,17 +31,12 @@ class SectionController extends Controller
             'faculty_id' => 'required|exists:faculties,id',
             'school_year' => 'required|string',
             'isActive' => 'required|boolean',
+            'disability_id' => 'nullable|exists:disabilities,id',
         ]);
 
-        $section = Section::create([
-            'section_name' => $validated['section_name'],
-            'grade_level' => $validated['grade_level'],
-            'faculty_id' => $validated['faculty_id'],
-            'school_year' => $validated['school_year'],
-            'isActive' => $validated['isActive'],
-        ])->with(['students.user', 'faculty.user'])->get();
+        $section = Section::create($validated);
 
-        return response()->json(["section" => $section], 201);
+        return response()->json(["section" => $section->load('students.user', 'faculty.user', 'disability')], 201);
 
 
     }
@@ -55,11 +50,11 @@ class SectionController extends Controller
                 'school_year' => 'sometimes|string',
                 'isActive' => 'sometimes|boolean',
                 'section_name' => 'sometimes|string',
-                'section_description' => 'sometimes|string',
+                'disability_id' => 'nullable|exists:disabilities,id',
             ]);
             $section->update($validated);
 
-            return response()->json(["section" => $section, "req" => $validated], 200);
+            return response()->json(["section" => $section->load('students.user', 'faculty.user', 'disability'), "req" => $validated], 200);
         } catch (\Throwable $th) {
             return response()->json(["message" => $th->getMessage()], 400);
         }
@@ -93,7 +88,7 @@ class SectionController extends Controller
 
     public function showFacultySections(Faculty $faculty)
     {
-        $sections = $faculty->sections()->with(['students.user'])->get();
+        $sections = $faculty->sections()->with(['students.user', 'disability'])->get();
 
         return response()->json(["sections" => $sections], 200);
     }
@@ -108,11 +103,15 @@ class SectionController extends Controller
 
         try {
             foreach ($validated['students'] as $studentId) {
-                $student = Student::findOrFail($studentId);
+                $student = Student::with('disabilities')->findOrFail($studentId);
                 $activeSection = $student->activeSection();
 
                 if ($activeSection) {
                     return response()->json(["message" => "A student is already enlisted on an active section."], 400);
+                }
+
+                if ($section->disability_id && !$student->disabilities->contains($section->disability_id)) {
+                    return response()->json(["message" => "A student does not have the required disability for this section."], 400);
                 }
             }
             foreach ($validated['students'] as $studentId) {

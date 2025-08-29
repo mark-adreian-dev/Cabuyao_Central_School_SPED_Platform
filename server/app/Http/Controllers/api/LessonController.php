@@ -200,7 +200,7 @@ class LessonController extends Controller
 
     public function getLessonsByFaculty(Faculty $faculty)
     {
-        $lessons = Lesson::where('faculty_id', $faculty->id)->with(['files', 'links'])->get();
+        $lessons = Lesson::where('faculty_id', $faculty->id)->withCount(['comments', 'files', 'links'])->get();
         return response()->json(['lessons' => $lessons], 200);
     }
 

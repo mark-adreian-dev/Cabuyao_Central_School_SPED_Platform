@@ -59,4 +59,24 @@ class User extends Authenticatable
             'age' => 'integer'
         ];
     }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    public function faculty()
+    {
+        return $this->hasOne(Faculty::class);
+    }
+
+    public function principal()
+    {
+        return $this->hasOne(Principal::class);
+    }
+
+    public function guardian()
+    {
+        return $this->hasOne(Guardian::class);
+    }
 }

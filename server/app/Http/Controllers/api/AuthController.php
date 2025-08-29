@@ -189,6 +189,12 @@ class AuthController extends Controller
                     // Generate token for valid user
                     $token = $this->generateToken($user);
 
+                    if ($user->role === "STUDENT") {
+                        $user->load('student.disabilities');
+                    } else {
+                        $user->load(strtolower($user->role));
+                    }
+
                     return response()->json([
                         'message' => 'Logged in successfully',
                         'token' => $token,

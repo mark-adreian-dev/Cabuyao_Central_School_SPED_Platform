@@ -42,4 +42,8 @@ class Activity extends Model
         return $this->hasMany(StudentActivity::class);
     }
 
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 }

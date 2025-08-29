@@ -8,11 +8,13 @@ use App\Http\Controllers\api\StudentActivityController;
 use App\Http\Controllers\api\StudentActivityFileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\LessonController;
+use App\Http\Controllers\api\RegistrationController;
+use App\Http\Controllers\api\CommentController;
 
 
 Route::prefix("user")->group(function () {
     // Unprotected Routes (Available to unauthenticated users)
-    Route::post("/register", [AuthController::class, 'register']); // Register user
+    Route::post("/register", [RegistrationController::class, 'register']); // Register user
     Route::post("/send-email-verification/{user}", [AuthController::class, 'sendVerification']);
     Route::post("/verify-email/{user}", [AuthController::class, 'verifyCode']);
     Route::post("/login", [AuthController::class, 'login']); // Login user to get token (no auth:sanctum middleware)
@@ -97,4 +99,13 @@ Route::group(["prefix" => "lessons", 'middleware' => ['auth:sanctum']], function
         Route::get('/student/{student}', [LessonController::class, 'getLessonsByStudent']);
     });
 
+});
+
+Route::group(["prefix" => "comments", 'middleware' => ['auth:sanctum']], function () {
+    Route::get('/lesson/{lesson}', [CommentController::class, 'getLessonComments']);
+    Route::get('/activity/{activity}', [CommentController::class, 'getActivityComments']);
+    Route::post('/', [CommentController::class, 'store']);
+    Route::get('/{comment}', [CommentController::class, 'show']);
+    Route::put('/{comment}', [CommentController::class, 'update']);
+    Route::delete('/{comment}', [CommentController::class, 'destroy']);
 });

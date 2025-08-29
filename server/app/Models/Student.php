@@ -45,4 +45,9 @@ class Student extends Model
     {
         return $this->hasMany(StudentActivity::class);
     }
+
+    public function disabilities()
+    {
+        return $this->belongsToMany(Disability::class, 'student_disabilities', 'student_id', 'disability_id');
+    }
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Section extends Model
 {
-    protected $fillable = ['grade_level', 'faculty_id', 'school_year', 'isActive', 'section_name'];
+    protected $fillable = ['grade_level', 'faculty_id', 'school_year', 'isActive', 'section_name', 'disability_id'];
 
     protected function casts(): array
     {
@@ -35,5 +35,10 @@ class Section extends Model
             ->belongsToMany(Activity::class, 'activity_sections', 'section_id', 'activity_id')
             ->withPivot('deadline', 'grading_period')
             ->withTimestamps();
+    }
+
+    public function disability()
+    {
+        return $this->belongsTo(Disability::class);
     }
 }

@@ -32,4 +32,9 @@ class Lesson extends Model
     {
         return $this->hasMany(LessonLink::class);
     }
+
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
 }
